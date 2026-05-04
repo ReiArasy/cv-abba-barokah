@@ -2,38 +2,64 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Product;
-use App\Models\Order; 
-use Illuminate\Support\Facades\DB;  
+use App\Models\Order;
+use App\Models\OrderItem;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
-    //
-    public function store(Request $request)
-    {
-        $product = Product::findOrFail($request->product_id);
+    public function checkout()
+{
+    /** @var \App\Models\User $user */
+    $user = Auth::user();
 
-        if ($product->stock < $request->quantity) {
-            return back()->with('error', 'Stock tidak cukup');
-        }
+    $cart = $user->cart ?? $user->cart()->create();
+    $cart->load('items.product');
 
-        DB::transaction(function () use ($request, $product) {
+    if ($cart->items->isEmpty()) {
+        return back()->with('error', 'Keranjang kosong');
+    }
 
-            $total = $product->price * $request->quantity;
+    DB::transaction(function () use ($cart, $user) {
 
-            Order::create([
-                'user_id' => Auth::id(),
-                'product_id' => $product->id,
-                'quantity' => $request->quantity,
-                'total_price' => $total,
+        $order = Order::create([
+            'user_id' => $user->id,
+            'total_price' => 0,
+            'status' => 'pending',
+            'payment_status' => 'unpaid',
+        ]);
+
+        $total = 0;
+
+        foreach ($cart->items as $item) {
+
+            if ($item->product->stock < $item->quantity) {
+                throw new \Exception('Stock tidak cukup untuk ' . $item->product->name);
+            }
+
+            $subtotal = $item->price * $item->quantity;
+
+            OrderItem::create([
+                'order_id' => $order->id,
+                'product_id' => $item->product_id,
+                'quantity' => $item->quantity,
+                'price' => $item->price,
+                'subtotal' => $subtotal,
             ]);
 
-            $product->decrement('stock', $request->quantity);
-        });
+            $item->product->decrement('stock', $item->quantity);
 
-        return redirect()->route('orders.history');
-    }
+            $total += $subtotal;
+        }
+
+        $order->update([
+            'total_price' => $total
+        ]);
+
+        $cart->items()->delete();
+    });
+
+    return redirect()->route('orders.history');
+   }
 }

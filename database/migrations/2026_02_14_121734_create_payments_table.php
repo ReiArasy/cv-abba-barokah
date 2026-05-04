@@ -13,14 +13,21 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('order_id')
+              $table->foreignId('order_id')
                 ->constrained()
                 ->cascadeOnDelete();
 
             $table->string('payment_method')->nullable();
-            $table->string('transaction_id')->nullable();
-            $table->string('payment_status')->default('pending');
-            $table->timestamp('payment_date')->nullable();
+            $table->string('payment_reference')->nullable(); // payment-gateaway transaction id
+
+            $table->enum('payment_status', [
+                'pending',
+                'paid',
+                'failed'
+            ])->default('pending');
+
+            $table->timestamp('paid_at')->nullable();
+
             $table->json('raw_response')->nullable();
             $table->timestamps();
         });
