@@ -46,23 +46,40 @@ class OrderResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('code')
-                    ->label('Kode Pesanan')
-                    ->searchable()
-                    ->sortable(),
+                
+            Tables\Columns\TextColumn::make('code')
+                ->label('Kode Pesanan')
+                ->searchable()
+                ->sortable(),
 
-                Tables\Columns\TextColumn::make('created_at')
-                    ->label('Tanggal Dibuat')
-                    ->dateTime('d M Y'),
+            Tables\Columns\TextColumn::make('user.name')
+                ->label('Customer')
+                ->searchable(),
 
-                Tables\Columns\TextColumn::make('status')
-                    ->badge()
-                    ->color(fn(string $state): string => match ($state) {
-                        'pending' => 'warning',
-                        'processing' => 'primary',
-                        'shipped' => 'success',
-                        'cancelled' => 'danger',
-                    })
+            Tables\Columns\TextColumn::make('total_price')
+                ->label('Total')
+                ->money('IDR', true),
+
+            Tables\Columns\TextColumn::make('payment_status')
+                ->badge()
+                ->color(fn(string $state): string => match ($state) {
+                    'paid' => 'success',
+                    'unpaid' => 'warning',
+                    'failed' => 'danger',
+                }),
+
+            Tables\Columns\TextColumn::make('status')
+                ->badge()
+                ->color(fn(string $state): string => match ($state) {
+                    'pending' => 'warning',
+                    'processing' => 'primary',
+                    'shipped' => 'success',
+                    'cancelled' => 'danger',
+                }),
+
+            Tables\Columns\TextColumn::make('created_at')
+                ->label('Tanggal')
+                ->dateTime('d M Y'),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
@@ -74,6 +91,12 @@ class OrderResource extends Resource
         return [
             //
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->with(['user', 'items.product', 'payment']);
     }
 
     public static function getPages(): array
