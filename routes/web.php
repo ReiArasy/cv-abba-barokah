@@ -41,9 +41,7 @@ Route::get('/products/{product}', [ProductController::class, 'show'])
 
 Route::middleware(['auth', 'role:customer'])->group(function () {
 
-    Route::get('/customer/dashboard', function () {
-        return view('customer.dashboard');
-    })->name('customer.dashboard');
+    Route::get('/customer/dashboard', [ProductController::class, 'dashboard'])->name('customer.dashboard');
 
     Route::post('/orders', [OrderController::class, 'store'])
         ->name('orders.store');
