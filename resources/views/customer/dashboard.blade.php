@@ -30,22 +30,7 @@
     <header class="break-container relative h-[500px] bg-cover bg-center" 
             style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=1200');">
         
-        <nav class="container mx-auto px-12 py-8 flex justify-between items-center relative z-10">
-            <!-- Logo Box -->
-            <div class="bg-white/90 p-3 rounded shadow-sm">
-                <div class="w-12 h-8 bg-gray-200 flex items-center justify-center">
-                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"/></svg>
-                </div>
-            </div>
-            <!-- Navigation -->
-            <div class="flex space-x-10 text-white font-bold text-sm">
-                <a href="#" class="border-b-2 border-white pb-1">Home</a>
-                <a href="#" class="opacity-80 hover:opacity-100 transition">About us</a>
-                <a href="#" class="opacity-80 hover:opacity-100 transition">Product</a>
-                <a href="#" class="opacity-80 hover:opacity-100 transition">Purchase</a>
-                <a href="#" class="opacity-80 hover:opacity-100 transition">Contact</a>
-            </div>
-        </nav>
+        
 
         <div class="flex flex-col items-center justify-center h-full -mt-20 px-4 text-center text-white relative z-10">
             <p class="uppercase tracking-[0.3em] text-[10px] font-extrabold mb-4 opacity-90">CV ABBA BAROKAH</p>
@@ -64,35 +49,53 @@
         </div>
     </header>
 
-    <!-- PRODUCTS SECTION (CENTERED) -->
-    <section class="container mx-auto px-6 py-20">
+<section class="container mx-auto px-6 py-20">
         <div class="flex justify-between items-center mb-12">
             <div>
                 <h2 class="text-3xl font-extrabold text-dark-ui">Products</h2>
                 <div class="h-1.5 w-12 bg-teal-ui mt-2"></div>
             </div>
-            <button class="px-6 py-2 border border-teal-ui text-teal-ui rounded font-bold text-xs hover:bg-teal-ui hover:text-white transition">View All</button>
+            <a href="{{ route('products.index') }}" class="px-6 py-2 border border-teal-ui text-teal-ui rounded font-bold text-xs hover:bg-teal-ui hover:text-white transition inline-block">
+                View All
+            </a>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <!-- Active Card -->
-            <div class="border-2 border-teal-ui rounded-sm p-5 shadow-sm group">
-                <div class="aspect-square bg-white border border-gray-100 mb-5"></div>
-                <div class="bg-gray-50 p-5 border-t border-gray-100">
-                    <h3 class="font-bold text-dark-ui text-sm">Gelas RS Semen Gresik</h3>
-                    <p class="text-xs text-gray-400 mt-1 font-medium">Souvenir</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+            @forelse($products as $product)
+            <a href="{{ route('products.show', $product->id) }}" class="border border-gray-200 rounded-sm p-5 hover:border-teal-ui/50 shadow-sm hover:shadow-md transition flex flex-col justify-between relative bg-white group block text-left decoration-none">
+                
+                <div class="absolute top-4 right-4 w-6 h-6 bg-gray-100 group-hover:bg-teal-ui group-hover:text-white transition rounded-full flex items-center justify-center text-gray-500 font-bold text-sm shadow-sm z-10">
+                    +
                 </div>
-            </div>
-            <!-- Ordinary Cards -->
-            @foreach(['Souvenir', 'Peralatan Kantor', 'Peralatan Kantor'] as $category)
-            <div class="border border-gray-200 rounded-sm p-5 hover:border-teal-ui/50 transition">
-                <div class="aspect-square bg-white border border-gray-100 mb-5"></div>
-                <div class="bg-gray-50 p-5 border-t border-gray-100">
-                    <h3 class="font-bold text-dark-ui text-sm">Gelas RS Semen Gresik</h3>
-                    <p class="text-xs text-gray-400 mt-1 font-medium">{{ $category }}</p>
+
+                <div class="aspect-square bg-gray-50 border border-gray-100 mb-5 flex items-center justify-center rounded overflow-hidden">
+                    @if($product->image)
+                        <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="object-cover w-full h-full group-hover:scale-105 transition duration-300">
+                    @else
+                        <svg class="w-12 h-12 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"/>
+                        </svg>
+                    @endif
                 </div>
+
+                <div class="bg-gray-50 p-5 border-t border-gray-100 rounded-b w-full">
+                    <h3 class="font-bold text-dark-ui text-sm line-clamp-1 group-hover:text-teal-ui transition">
+                        {{ $product->name }}
+                    </h3>
+                    <p class="text-xs text-gray-400 mt-1 font-medium">
+                        {{ $product->category->name ?? 'Uncategorized' }}
+                    </p>
+                    <p class="text-teal-ui font-bold text-sm mt-3">
+                        Rp {{ number_format($product->price, 0, ',', '.') }}
+                    </p>
+                </div>
+
+            </a>
+            @empty
+            <div class="col-span-full text-center py-12 text-gray-400 font-medium">
+                Belum ada produk terbaru yang tersedia.
             </div>
-            @endforeach
+            @endforelse
         </div>
     </section>
 
