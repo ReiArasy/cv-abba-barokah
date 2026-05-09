@@ -3,23 +3,22 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ProductResource\Pages;
-use App\Filament\Resources\ProductResource\RelationManagers;
 use App\Models\Product;
-use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Toggle;
+
+use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ImageColumn;
-use Filament\Forms\Components\Toggle;
 use Filament\Tables\Columns\IconColumn;
+
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 
@@ -28,47 +27,81 @@ class ProductResource extends Resource
     protected static ?string $model = Product::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?string $navigationLabel = 'Produk';
+    protected static ?string $navigationLabel = 'Manage Produk';
     protected static ?string $title = 'Produk';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                //
+
                 Select::make('category_id')
                     ->label('Kategori')
                     ->relationship('category', 'name')
-                    ->required()
-                    ->searchable(),
+                    ->searchable()
+                    ->rules(['required']),
 
                 TextInput::make('name')
                     ->label('Nama Produk')
-                    ->required()
-                    ->maxLength(255),
-
+                    ->maxLength(255)
+                    ->rules(['required']),
+                    
                 TextInput::make('price')
                     ->label('Harga')
                     ->numeric()
-                    ->required(),
+                    ->minValue(0)
+                    ->rules(['required', 'numeric']),
 
                 TextInput::make('stock')
                     ->label('Stok')
                     ->numeric()
-                    ->required(),
+                    ->minValue(0)
+                    ->rules(['required', 'numeric', 'integer']),
 
                 Textarea::make('description')
                     ->label('Deskripsi')
                     ->rows(3)
-                    ->nullable(),
+                    ->nullable()
+                    ->rules(['required']),
 
                 FileUpload::make('image')
                     ->label('Gambar Produk')
+
+                    // MULTIPLE IMAGE
+                    ->multiple()
+
+                    // MAX 3 FILE
+                    ->maxFiles(3)
+
+                    // WAJIB
+                    ->rules(['required'])
+
+                    // IMAGE ONLY
                     ->image()
+
+                    // VALIDASI MIME
+                    ->acceptedFileTypes([
+                        'image/jpeg',
+                        'image/png',
+                        'image/jpg',
+                    ])
+
+                    // MAX 2MB
+                    ->maxSize(2048)
+
+                    // STORAGE
                     ->disk('public')
                     ->visibility('public')
                     ->directory('products')
-                    ->nullable(),
+
+                    // PREVIEW
+                    ->imagePreviewHeight('150')
+
+                    // PANEL
+                    ->panelLayout('grid')
+
+                    // VALIDASI TEXT
+                    ->helperText('Upload maksimal 3 gambar. Format: JPG, JPEG, PNG. Maksimal 2MB.'),
 
                 Toggle::make('is_active')
                     ->label('Status Aktif')
@@ -77,12 +110,15 @@ class ProductResource extends Resource
             ]);
     }
 
-    public static function table(Table $table): Table
+     public static function table(Table $table): Table
     {
         return $table
             ->columns([
+
                 ImageColumn::make('image')
                     ->label('Gambar')
+                    ->getStateUsing(fn ($record) => $record->image[0] ?? null)
+
                     ->disk('public')
                     ->circular(),
 
@@ -102,7 +138,8 @@ class ProductResource extends Resource
                     ->label('Stok'),
 
                 TextColumn::make('created_at')
-                    ->dateTime(),
+                    ->label('Tanggal Dibuat')
+                    ->dateTime('d M Y H:i'),
 
                 IconColumn::make('is_active')
                     ->label('Status')
@@ -111,9 +148,10 @@ class ProductResource extends Resource
                     ->falseIcon('heroicon-o-x-circle')
                     ->trueColor('success')
                     ->falseColor('danger'),
-
             ])
+
             ->filters([
+
                 SelectFilter::make('category')
                     ->relationship('category', 'name')
                     ->label('Filter Kategori'),
@@ -125,17 +163,17 @@ class ProductResource extends Resource
                     ->falseLabel('Barang Tidak Aktif')
                     ->boolean(),
             ])
+
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
+
             ->bulkActions([]);
     }
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array

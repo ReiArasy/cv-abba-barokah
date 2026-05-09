@@ -34,7 +34,7 @@ class CategoryResource extends Resource
                 //
                 TextInput::make('name')
                     ->label('Nama Kategori')
-                    ->required()
+                    ->rules(['required'])
                     ->maxLength(255)
                     ->unique(ignoreRecord: true)
                     ->disabled(fn($record) => $record !== null), // tidak bisa diubah setelah dibuat

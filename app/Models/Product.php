@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-    //
     protected $fillable = [
         'category_id',
         'name',
@@ -17,13 +16,14 @@ class Product extends Model
         'is_active',
     ];
 
-    // casts is_active to boolean true or false
     protected $casts = [
+
         'is_active' => 'boolean',
+
+        // IMPORTANT
+        'image' => 'array',
     ];
 
-
-    // scope active untuk mengambil data produk yang aktif
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
@@ -34,12 +34,11 @@ class Product extends Model
         return $this->belongsTo(Category::class);
     }
 
-     public function orderItems()
+    public function orderItems()
     {
         return $this->hasMany(OrderItem::class);
     }
 
-    // (buat cart)
     public function cartItems()
     {
         return $this->hasMany(CartItem::class);
