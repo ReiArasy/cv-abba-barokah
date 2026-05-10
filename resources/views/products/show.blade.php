@@ -52,13 +52,23 @@
             </button>
 
             <div class="w-full h-full max-h-[400px] flex items-center justify-center p-8">
-                @if($product->image)
-                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="object-contain max-w-full max-h-full rounded shadow-sm">
+
+                @if(!empty($product->image) && is_array($product->image) && isset($product->image[0]))
+
+                    <img 
+                        src="{{ asset('storage/' . $product->image[0]) }}" 
+                        alt="{{ $product->name }}" 
+                        class="object-contain max-w-full max-h-full rounded shadow-sm"
+                    >
+
                 @else
+
                     <svg class="w-32 h-32 text-[#98a2b3]" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"/>
                     </svg>
+
                 @endif
+
             </div>
 
             <button class="w-10 h-10 flex items-center justify-center text-slate-700 hover:text-dark-ui transition">
