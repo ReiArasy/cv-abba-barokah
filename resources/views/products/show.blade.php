@@ -1,148 +1,438 @@
-@extends('layouts.app')
+{{-- resources/views/products/show.blade.php --}}
 
-@section('content')
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-    
-    .ui-font {
-        font-family: 'Plus Jakarta Sans', sans-serif;
-    }
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ $product->name }} - Detail Produk</title>
 
-    .break-container {
-        width: 100vw;
-        position: relative;
-        left: 50%;
-        right: 50%;
-        margin-left: -50vw;
-        margin-right: -50vw;
-    }
+    {{-- Bootstrap --}}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    .bg-teal-ui { background-color: #14b8a6; }
-    .text-teal-ui { color: #14b8a6; }
-    .text-dark-ui { color: #1e293b; }
-</style>
+    {{-- Icon --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
 
-<div class="ui-font bg-white min-h-screen">
+    <style>
+        body{
+            background:#f4f6f8;
+            font-family: 'Segoe UI', sans-serif;
+        }
 
-    <main class="container mx-auto px-6 md:px-12 py-8">
+        .product-wrapper{
+            background:white;
+            border-radius:12px;
+            padding:40px;
+            margin-top:40px;
+            box-shadow:0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .back-btn{
+            color:#333;
+            text-decoration:none;
+            font-size:20px;
+        }
+
+        .product-title{
+            font-weight:700;
+            font-size:32px;
+        }
+
+        .category-badge{
+            background:#eef1f5;
+            padding:8px 14px;
+            border-radius:8px;
+            font-size:14px;
+            color:#666;
+        }
+
+        .product-image{
+            width:100%;
+            height:420px;
+            background:#e9edf2;
+            border-radius:12px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            position:relative;
+            overflow:hidden;
+        }
+
+        .product-image img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+        }
+
+        .slider-btn{
+            position:absolute;
+            top:50%;
+            transform:translateY(-50%);
+            width:45px;
+            height:45px;
+            border:none;
+            border-radius:50%;
+            background:white;
+            box-shadow:0 2px 10px rgba(0,0,0,0.15);
+        }
+
+        .slider-btn.left{
+            left:20px;
+        }
+
+        .slider-btn.right{
+            right:20px;
+        }
+
+        .description-box{
+            background:#f6f8fa;
+            padding:25px;
+            border-radius:10px;
+            height:100%;
+        }
+
+        .description-box h5{
+            color:#1fb5a9;
+            font-weight:700;
+            margin-bottom:20px;
+        }
+
+        .stock-box,
+        .qty-box{
+            border:1px solid #dcdcdc;
+            border-radius:8px;
+            height:55px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:20px;
+            font-weight:600;
+            background:white;
+        }
+
+        .qty-box button{
+            border:none;
+            background:none;
+            font-size:22px;
+            width:40px;
+        }
+
+        /* Mengatur agar input number bawaan tidak terlihat seperti kolom input biasa */
+        .qty-input-hidden {
+            width: 50px;
+            border: none;
+            text-align: center;
+            font-weight: 600;
+            font-size: 20px;
+            background: transparent;
+            outline: none;
+        }
         
-        <div class="flex items-center justify-between mb-10">
-            <a href="{{ route('products.index') }}" class="text-slate-700 hover:text-teal-ui transition flex items-center gap-2 font-bold text-lg">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"></path>
-                </svg>
-            </a>
-            <h1 class="text-xl font-extrabold text-[#344054] tracking-tight">Details</h1>
-            <div class="w-5"></div> </div>
+        /* Menghilangkan arrow spinner bawaan browser pada input number */
+        .qty-input-hidden::-webkit-outer-spin-button,
+        .qty-input-hidden::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
 
-        <div class="flex justify-between items-start mb-6">
-            <h2 class="text-2xl md:text-3xl font-extrabold text-dark-ui tracking-tight">
-                {{ $product->name ?? 'Kursi Kantor Premium' }}
-            </h2>
-            <span class="bg-[#f2f4f7] text-[#344054] text-xs font-semibold px-3 py-1.5 rounded border border-gray-100">
+        .price-box{
+            border:1px solid #dcdcdc;
+            border-radius:10px;
+            padding:20px;
+            margin-top:20px;
+            background:white;
+        }
+
+        .price-label{
+            color:#777;
+            font-size:14px;
+        }
+
+        .price{
+            font-size:38px;
+            color:#16c79a;
+            font-weight:800;
+        }
+
+        .btn-buy{
+            background:#111827; /* Warna gelap Charcoal sesuai prototype */
+            color:white;
+            border:none;
+            padding:12px 22px;
+            border-radius:8px;
+            font-weight:600;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-cart{
+            border:2px solid #111827; /* Outline Charcoal menyesuaikan prototype */
+            color:#111827;
+            background:white;
+            padding:10px 22px;
+            border-radius:8px;
+            font-weight:600;
+        }
+
+        footer{
+            background:#dfe5ea;
+            margin-top:70px;
+            padding:50px 0;
+        }
+
+        .footer-title{
+            font-weight:800;
+            font-size:22px;
+        }
+
+        .footer-menu a{
+            display:block;
+            text-decoration:none;
+            color:#444;
+            margin-bottom:12px;
+        }
+
+        @media(max-width:768px){
+            .product-title{
+                font-size:24px;
+            }
+
+            .product-wrapper{
+                padding:20px;
+            }
+
+            .price{
+                font-size:28px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="product-wrapper">
+
+        {{-- Header --}}
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <a href="{{ route('products.index') }}" class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i>
+            </a>
+
+            <h2 class="fw-bold m-0">Details</h2>
+
+            <div></div>
+        </div>
+
+        {{-- Flash Notification Alerts --}}
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm" role="alert">
+                <i class="fa-solid fa-circle-check me-2"></i> {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm" role="alert">
+                <i class="fa-solid fa-circle-xmark me-2"></i> {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        {{-- Product Title Dinamis --}}
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="product-title m-0">{{ $product->name }}</h1>
+
+            <span class="category-badge">
                 {{ $product->category->name ?? 'Peralatan Kantor' }}
             </span>
         </div>
 
-        <div class="relative w-full bg-[#eaecf0] rounded-sm aspect-[16/8] mb-10 flex items-center justify-between px-4 group">
-            <button class="w-10 h-10 flex items-center justify-center text-slate-700 hover:text-dark-ui transition">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"></path>
-                </svg>
+        {{-- Product Image Dinamis (Aman dari Array to String Error) --}}
+        <div class="product-image mb-5">
+            @php
+                $displayImage = null;
+                if (is_array($product->image) && count($product->image) > 0) {
+                    if (!empty($product->image[0]) && trim($product->image[0]) !== '') {
+                        $displayImage = $product->image[0];
+                    }
+                } elseif (is_string($product->image) && !empty($product->image) && trim($product->image) !== '') {
+                    $displayImage = $product->image;
+                }
+            @endphp
+
+            @if($displayImage)
+                <img src="{{ asset('storage/' . $displayImage) }}" alt="{{ $product->name }}">
+            @else
+                <div class="text-center">
+                    <i class="fa-regular fa-image text-muted" style="font-size: 5rem;"></i>
+                    <p class="text-secondary small mt-2 mb-0">Gambar produk belum tersedia</p>
+                </div>
+            @endif
+
+            <button class="slider-btn left">
+                <i class="fa-solid fa-chevron-left"></i>
             </button>
 
-            <div class="w-full h-full max-h-[400px] flex items-center justify-center p-8">
-
-                @if(!empty($product->image) && is_array($product->image) && isset($product->image[0]))
-
-                    <img 
-                        src="{{ asset('storage/' . $product->image[0]) }}" 
-                        alt="{{ $product->name }}" 
-                        class="object-contain max-w-full max-h-full rounded shadow-sm"
-                    >
-
-                @else
-
-                    <svg class="w-32 h-32 text-[#98a2b3]" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"/>
-                    </svg>
-
-                @endif
-
-            </div>
-
-            <button class="w-10 h-10 flex items-center justify-center text-slate-700 hover:text-dark-ui transition">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"></path>
-                </svg>
+            <button class="slider-btn right">
+                <i class="fa-solid fa-chevron-right"></i>
             </button>
         </div>
 
-        <div class="flex flex-col md:flex-row gap-8 items-start mb-20">
+        {{-- Form Manajemen Order / Keranjang --}}
+        <form action="{{ route('cart.add', $product->id) }}" method="POST">
+            @csrf
             
-            <div class="w-full md:w-7/12 bg-[#eaecf0]/50 border border-gray-100 rounded-sm p-8 space-y-4">
-                <h3 class="text-teal-ui font-extrabold text-base tracking-wide">About</h3>
-                <div class="text-sm text-[#475467] leading-relaxed space-y-4 font-medium">
-                    @if($product->description)
-                        <p>{!! nl2br(e($product->description)) !!}</p>
-                    @else
-                        <p>Oportet uti solum de actibus prosequtionem et fugam, haec leniter et blandus et reservato.</p>
-                        <p>Quae tibi placent quicunq prosunt aut diligebat multum, quod memor sis ad communia sunt ab initio minima. Quod si, exempli gratia, cupidum rerum in propria sunt ceramic calicem, admonere te solum Ceramic, quod sit.</p>
-                    @endif
+            {{-- Product Content Layout --}}
+            <div class="row g-4">
+
+                {{-- Description Box --}}
+                <div class="col-lg-6">
+                    <div class="description-box">
+                        <h5>Deskripsi Produk</h5>
+                        <p class="text-secondary lh-base" style="text-align: justify;">
+                            {{ $product->description ?? 'Tidak ada deskripsi tertulis untuk produk ini.' }}
+                        </p>
+                    </div>
                 </div>
-            </div>
 
-            <div class="w-full md:w-5/12 bg-white border border-gray-200 rounded-sm p-6 shadow-sm">
-                <p class="text-xs font-semibold text-[#475467] mb-1">Total Price</p>
-                <p class="text-3xl font-extrabold text-teal-ui mb-6">
-                    Rp {{ number_format($product->price ?? 999999, 0, ',', '.') }}
-                </p>
+                {{-- Detail Transaksi Panel --}}
+                <div class="col-lg-6">
 
-                <form action="{{ route('orders.store') }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="product_id" value="{{ $product->id }}">
-                    <button type="submit" class="w-full bg-[#6366f1] text-white py-3 rounded-md font-bold text-sm shadow hover:bg-indigo-600 transition tracking-wide text-center">
-                        Order Produk
-                    </button>
-                </form>
-            </div>
+                    <div class="row mb-4">
+                        {{-- Sektor Info Stok Gudang --}}
+                        <div class="col-6">
+                            <label class="mb-2 fw-semibold">Stok</label>
+                            <div class="stock-box">
+                                {{ $product->stock }}
+                            </div>
+                        </div>
 
-        </div>
-    </main>
+                        {{-- Sektor Interaktif Quantity Counter --}}
+                        <div class="col-6">
+                            <label class="mb-2 fw-semibold">Kuantitas</label>
+                            <div class="qty-box">
+                                <button type="button" onclick="decreaseQty()">-</button>
+                                
+                                {{-- Input Tersembunyi Berbentuk Teks agar Nilai Masuk ke Request POST --}}
+                                <input type="number" 
+                                       id="quantity" 
+                                       name="quantity" 
+                                       class="qty-input-hidden" 
+                                       value="1" 
+                                       min="1" 
+                                       max="{{ $product->stock }}" 
+                                       readonly 
+                                       required>
 
-    <footer class="break-container bg-[#d1d5db] pt-20 pb-10">
-        <div class="container mx-auto px-12 grid grid-cols-1 md:grid-cols-4 gap-12">
-            <div class="md:col-span-2">
-                <div class="bg-white/60 p-4 w-20 h-16 rounded mb-8 flex items-center justify-center border border-gray-300">
-                    <div class="w-8 h-6 bg-gray-300"></div>
+                                <button type="button" onclick="increaseQty()">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Price & Action Buttons Box --}}
+                    <div class="price-box">
+
+                        <div class="price-label">
+                            Satuan Harga
+                        </div>
+
+                        <div class="price mb-4">
+                            Rp {{ number_format($product->price, 0, ',', '.') }}
+                        </div>
+
+                        <div class="d-flex gap-3 flex-wrap">
+                            @if($product->stock > 0 && $product->is_active)
+                                <button type="submit" class="btn-buy">
+                                    Masukkan Keranjang
+                                </button>
+                                
+                                <a href="{{ route('products.index') }}" class="btn-cart">
+                                    Order
+                                </a>
+                            @else
+                                <div class="alert alert-light border w-100 py-2 text-center text-muted mb-0" role="alert" style="font-size: 0.95rem;">
+                                    <i class="fa-solid fa-slash-circle me-2"></i> Produk Tidak Tersedia
+                                </div>
+                            @endif
+                        </div>
+
+                    </div>
+
                 </div>
-                <h3 class="font-extrabold text-dark-ui leading-tight mb-6 uppercase text-base">
-                    Membangun kualitas dan<br>menyediakan kepercayaan
-                </h3>
-                <div class="text-xs text-dark-ui/80 space-y-3 leading-relaxed">
-                    <p class="italic">Jl. MH Thamrin 3/10, Desa<br>Tlogobendung, Gresik, Jawa Timur</p>
-                    <p class="font-bold text-sm">+62 882-1712-6768</p>
-                    <p class="font-medium">ABBABAROKAH@gmail.com</p>
-                </div>
+
             </div>
-            <div class="flex flex-col space-y-4">
-                <a href="{{ route('home') }}" class="font-extrabold text-dark-ui text-sm">Home</a>
-                <a href="#" class="font-extrabold text-dark-ui text-sm">About us</a>
-                <a href="#" class="font-extrabold text-dark-ui text-sm">Purchase</a>
-                <a href="#" class="font-extrabold text-dark-ui text-sm">Contact</a>
-            </div>
-            <div>
-                <p class="font-extrabold text-dark-ui text-sm mb-6 uppercase tracking-wider">Product</p>
-                <ul class="text-xs text-gray-600 space-y-3 italic">
-                    <li>Peralatan Kantor</li>
-                    <li>Souvenir</li>
-                </ul>
-            </div>
-        </div>
-        <div class="container mx-auto px-12 mt-20 border-t border-gray-400/30 pt-8 text-center">
-            <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">&copy; 2026 CV ABBA BAROKAH. All Rights Reserved.</p>
-        </div>
-    </footer>
+        </form>
+
+    </div>
 
 </div>
-@endsection
+
+{{-- Footer Instansi --}}
+<footer>
+    <div class="container">
+        <div class="row">
+
+            <div class="col-lg-4 mb-4">
+                <div class="bg-white rounded p-3 d-inline-block mb-3">
+                    <i class="fa-regular fa-image"></i>
+                </div>
+
+                <h5 class="footer-title">
+                    MEMBANGUN KUALITAS DAN MENYEDIAKAN KEPERCAYAAN
+                </h5>
+
+                <p class="mt-3">
+                    Jl MH Thamrin 3/10, Desa Tlogobendung, Gresik, Jawa Timur
+                </p>
+
+                <p>+62 882-1712-6768</p>
+
+                <p>ABBABAROKAH@gmail.com</p>
+            </div>
+
+            <div class="col-lg-4 footer-menu ps-lg-5">
+                <a href="#">Home</a>
+                <a href="#">About us</a>
+                <a href="#">Purchase</a>
+                <a href="#">Contact</a>
+            </div>
+
+            <div class="col-lg-4 footer-menu">
+                <a href="#">Product</a>
+                <a href="#">Peralatan Kantor</a>
+                <a href="#">Souvenir</a>
+            </div>
+
+        </div>
+    </div>
+</footer>
+
+{{-- Script JS Counter Quantity Menyesuaikan Limitasi Stok Database --}}
+<script>
+    function increaseQty(){
+        const qtyInput = document.getElementById('quantity');
+        const maxStock = parseInt(qtyInput.getAttribute('max')) || 1;
+        let currentQty = parseInt(qtyInput.value) || 1;
+
+        if(currentQty < maxStock) {
+            qtyInput.value = currentQty + 1;
+        }
+    }
+
+    function decreaseQty(){
+        const qtyInput = document.getElementById('quantity');
+        let currentQty = parseInt(qtyInput.value) || 1;
+
+        if(currentQty > 1){
+            qtyInput.value = currentQty - 1;
+        }
+    }
+</script>
+
+{{-- Bootstrap JS Script dependency --}}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
