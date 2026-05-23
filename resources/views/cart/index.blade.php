@@ -3,6 +3,7 @@
 @section('content')
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
     body {
@@ -31,7 +32,6 @@
         font-weight: 600;
         color: #475569;
     }
-    /* Pembungkus Baris Item Keranjang Pas Sesuai Desain */
     .cart-item-box {
         background: #ffffff;
         border: 1px solid #e2e8f0;
@@ -67,13 +67,11 @@
         font-size: 0.75rem;
         color: #94a3b8;
     }
-    /* Warna Teal/Hijau Tosca Cerah Sesuai Mockup */
     .price-text {
         font-size: 1.15rem;
         font-weight: 700;
         color: #14b8a6; 
     }
-    /* Tombol Kuantitas Kotak Ungu Cerah */
     .btn-qty-minus, .btn-qty-plus {
         background-color: #6366f1;
         color: #ffffff;
@@ -93,7 +91,6 @@
         width: 45px;
         text-align: center;
     }
-    /* Kotak Menu Aksi & Total Bagian Bawah */
     .cart-footer-box {
         background: #ffffff;
         border: 1px solid #e2e8f0;
@@ -109,9 +106,11 @@
         background: none;
         border: none;
         padding: 0;
+        cursor: pointer;
+        transition: color 0.2s ease-in-out;
     }
     .btn-action-delete:hover {
-        text-decoration: underline;
+        color: #b91c1c; /* Lebih gelap saat dihover */
     }
     .total-label {
         font-size: 0.85rem;
@@ -124,10 +123,20 @@
         color: #ffffff;
         border: none;
         padding: 10px 36px;
-        border-radius: 4px;
-        font-size: 0.9rem;
+        border-radius: 6px;
+        font-size: 0.95rem;
         font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
     }
+    .btn-checkout-submit:hover {
+        background-color: #4f46e5;
+    }
+    
+    /* CSS Kustom untuk Tombol SweetAlert agar menyatu dengan tema */
+    .swal2-confirm-custom { background-color: #ef4444 !important; color: white !important; border-radius: 6px !important; padding: 10px 24px !important; font-weight: 600 !important; }
+    .swal2-cancel-custom { background-color: #f1f5f9 !important; color: #475569 !important; border-radius: 6px !important; padding: 10px 24px !important; font-weight: 600 !important; margin-right: 10px !important;}
+    .swal2-confirm-checkout { background-color: #6366f1 !important; color: white !important; border-radius: 6px !important; padding: 10px 24px !important; font-weight: 600 !important; }
 </style>
 
 <div class="container">
@@ -139,6 +148,33 @@
             </a>
             <div class="cart-title">Keranjang</div>
         </div>
+
+        @if(session('success'))
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: '{{ session('success') }}',
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+                });
+            </script>
+        @endif
+
+        @if(session('error'))
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: '{{ session('error') }}',
+                        confirmButtonColor: '#ef4444'
+                    });
+                });
+            </script>
+        @endif
 
         <div class="row mb-3 px-3 text-center d-none d-md-flex align-items-center">
             <div class="col-md-4 text-start" style="padding-left: 52px;">
@@ -175,7 +211,7 @@
                         
                         <div>
                             <div class="product-name">{{ $item->product->name }}</div>
-                            <div class="product-category">{{ $item->product->category->name ?? 'Kebutuhan kantor' }}</div>
+                            <div class="product-category">{{ $item->product->category->name ?? 'Kategori Umum' }}</div>
                         </div>
                     </div>
 
@@ -194,16 +230,24 @@
                         </form>
                     </div>
 
-                    <div class="col-md-3 text-end style="padding-right: 5px;">
+                    <div class="col-md-3 text-end" style="padding-right: 5px;">
                         <div class="price-text">Rp {{ number_format($item->quantity * $item->product->price, 0, ',', '.') }}</div>
+                        
+                        <form action="{{ route('cart.remove', $item->id) }}" method="POST" class="mt-2 m-0">
+                            @csrf
+                            @method('DELETE')
+                            <button type="button" onclick="confirmDelete(this, '{{ $item->product->name }}')" class="btn-action-delete" style="font-size: 0.85rem;">
+                                <i class="fa-solid fa-trash"></i> Hapus
+                            </button>
+                        </form>
                     </div>
 
                 </div>
             @endforeach
         @else
-            <div class="text-center py-5 border border-dashed rounded-3">
-                <i class="fa-solid fa-basket-shopping text-muted mb-3" style="font-size: 3rem; opacity: 0.3;"></i>
-                <p class="text-secondary mb-0">Belum ada barang di dalam keranjang Anda.</p>
+            <div class="text-center py-5 border border-dashed rounded-3" style="border-color: #cbd5e1; border-style: dashed; border-width: 2px;">
+                <i class="fa-solid fa-basket-shopping text-muted mb-3" style="font-size: 3rem; color: #94a3b8; opacity: 0.5;"></i>
+                <p class="text-secondary mb-0" style="color: #64748b;">Belum ada barang di dalam keranjang Anda.</p>
             </div>
         @endif
 
@@ -213,7 +257,6 @@
                 <div class="col-sm-5 d-flex align-items-center gap-3">
                     <input type="checkbox" class="form-check-input custom-checkbox m-0">
                     <span class="fw-semibold text-dark" style="font-size: 0.95rem;">Pilih Semua ( {{ $cart->items->count() }} )</span>
-                    <button type="button" class="btn-action-delete ms-3">Hapus</button>
                 </div>
                 
                 <div class="col-sm-7 d-flex align-items-center justify-content-sm-end gap-4 mt-3 mt-sm-0">
@@ -229,7 +272,7 @@
                     
                     <form action="{{ route('cart.checkout') }}" method="POST" class="m-0">
                         @csrf
-                        <button type="submit" class="btn-checkout-submit">Checkout</button>
+                        <button type="button" onclick="confirmCheckout(this)" class="btn-checkout-submit shadow-sm">Checkout</button>
                     </form>
                 </div>
 
@@ -240,6 +283,7 @@
 </div>
 
 <script>
+    // Fungsi untuk memperbarui kuantitas (Plus & Minus)
     function changeQtyValue(button, direction) {
         const form = button.closest('form');
         const hiddenInput = form.querySelector('.qty-hidden-input');
@@ -253,7 +297,60 @@
             hiddenInput.value = newVal;
             displaySpan.innerText = newVal;
             form.submit();
+        } else if (newVal > maxVal) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Stok Terbatas',
+                text: 'Jumlah barang tidak boleh melebihi stok maksimal (' + maxVal + ')',
+                confirmButtonColor: '#6366f1'
+            });
         }
+    }
+
+    // Fungsi SweetAlert untuk Konfirmasi Hapus Produk
+    function confirmDelete(button, productName) {
+        Swal.fire({
+            title: 'Hapus Produk?',
+            html: `Apakah Anda yakin ingin menghapus <b>${productName}</b> dari keranjang?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal',
+            reverseButtons: true, // Posisikan tombol batal di kiri
+            customClass: {
+                confirmButton: 'swal2-confirm-custom',
+                cancelButton: 'swal2-cancel-custom'
+            },
+            buttonsStyling: false // Mematikan style bawaan agar menggunakan customClass
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Jika user klik Ya, submit form terdekat (form delete item)
+                button.closest('form').submit();
+            }
+        });
+    }
+
+    // Fungsi SweetAlert untuk Konfirmasi Checkout
+    function confirmCheckout(button) {
+        Swal.fire({
+            title: 'Konfirmasi Pesanan',
+            text: 'Apakah Anda sudah yakin dengan pesanan ini dan ingin melanjutkan ke pembayaran?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Lanjut Checkout',
+            cancelButtonText: 'Cek Lagi',
+            reverseButtons: true,
+            customClass: {
+                confirmButton: 'swal2-confirm-checkout',
+                cancelButton: 'swal2-cancel-custom'
+            },
+            buttonsStyling: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Jika user klik Ya, submit form checkout
+                button.closest('form').submit();
+            }
+        });
     }
 </script>
 @endsection
