@@ -73,7 +73,8 @@ class ProductResource extends Resource
                     // MAX 3 FILE
                     ->maxFiles(3)
 
-                    // WAJIB
+                    // WAJIB - harus pakai ->required() agar Filament tidak menambahkan 'nullable'
+                    ->required()
                     ->rules(['required'])
 
                     // IMAGE ONLY

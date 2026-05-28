@@ -18,6 +18,7 @@ class EditProduct extends EditRecord
     //     ];
     // }
 
+    
     protected function getCreatedNotification(): ?Notification
     {
         return Notification::make()

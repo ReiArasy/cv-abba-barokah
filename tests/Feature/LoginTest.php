@@ -1,12 +1,28 @@
 <?php
 namespace Tests\Feature;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\User;
 
 class LoginTest extends TestCase
 {
-     /**
+    use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // SETUP: Membuat admin user hardcoded untuk keperluan testing
+        User::create([
+            'name' => 'Abba Admin',
+            'email' => 'abba@gmail.com',
+            'password' => bcrypt('abba123'),
+            'role' => 'admin',
+        ]);
+    }
+
+    /**
      * SETUP: menyiapkan data user
      * ACTION: kirim request login
      * ASSERTION: cek user berhasil login
