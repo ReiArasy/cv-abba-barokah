@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-<!-- Custom Styles untuk Full Width & Font -->
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
     
@@ -26,12 +25,11 @@
 
 <div class="ui-font bg-white overflow-x-hidden">
 
-    <!-- HERO SECTION (FULL WIDTH) -->
+    @include('components.navbar')
+
     <header class="break-container relative h-[500px] bg-cover bg-center" 
             style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=1200');">
         
-        
-
         <div class="flex flex-col items-center justify-center h-full -mt-20 px-4 text-center text-white relative z-10">
             <p class="uppercase tracking-[0.3em] text-[10px] font-extrabold mb-4 opacity-90">CV ABBA BAROKAH</p>
             <h1 class="text-4xl md:text-5xl font-extrabold leading-tight mb-8">
@@ -39,7 +37,6 @@
                 menyediakan berbagai produk berkualitas<br>
                 dengan pelayanan terpercaya
             </h1>
-            <!-- Search Input -->
             <div class="w-full max-w-lg relative">
                 <span class="absolute inset-y-0 left-4 flex items-center text-gray-400">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
@@ -49,7 +46,7 @@
         </div>
     </header>
 
-<section class="container mx-auto px-6 py-20">
+    <section class="container mx-auto px-6 py-20">
         <div class="flex justify-between items-center mb-12">
             <div>
                 <h2 class="text-3xl font-extrabold text-dark-ui">Products</h2>
@@ -76,11 +73,9 @@
                             class="object-cover w-full h-full group-hover:scale-105 transition duration-300"
                         >
                     @else
-
                         <svg class="w-12 h-12 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"/>
                         </svg>
-
                     @endif
                 </div>
 
@@ -105,7 +100,6 @@
         </div>
     </section>
 
-    <!-- EXCLUSIVE SECTION (CENTERED) -->
     <section class="container mx-auto px-6 py-20 flex flex-col md:flex-row items-center gap-16">
         <div class="w-full md:w-1/2">
             <img src="https://images.unsplash.com/photo-1520691512911-205488137521?q=80&w=600" class="rounded-sm shadow-xl w-full h-[450px] object-cover">
@@ -136,7 +130,6 @@
         </div>
     </section>
 
-    <!-- CTA SECTION (FULL WIDTH BG) -->
     <section class="break-container bg-gray-50 py-24 text-center">
         <div class="container mx-auto px-6">
             <p class="text-teal-ui font-bold text-xs mb-4">Why choose ABBA Barokah?</p>
@@ -148,7 +141,6 @@
         </div>
     </section>
 
-    <!-- FOOTER (FULL WIDTH) -->
     <footer class="break-container bg-[#d1d5db] pt-20 pb-10">
         <div class="container mx-auto px-12 grid grid-cols-1 md:grid-cols-4 gap-12">
             <div class="md:col-span-2">
@@ -184,4 +176,4 @@
     </footer>
 
 </div>
-@endsection
+@endsection 

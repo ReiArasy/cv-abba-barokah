@@ -30,7 +30,7 @@ class AuthController extends Controller
             if ($user->role === 'admin') {
                 return redirect('/admin'); // Dashboard Filament untuk Admin
             } elseif ($user->role === 'customer') {
-                return redirect()->route('customer.dashboard'); // Halaman Baru untuk Customer
+                return redirect()->intended(route('home')); // Halaman Baru untuk Customer (Mendarat ke Landing Page)
             }
 
             // Default jika role tidak dikenal
@@ -82,12 +82,15 @@ class AuthController extends Controller
         return redirect()->route('login')->with('success', 'Registrasi berhasil! Silakan login.');
     }
 
-    // TAMBAHKAN FUNGSI LOGOUT AGAR BISA GANTI AKUN SAAT TESTING
     public function logout(Request $request)
     {
         Auth::logout();
+
+        // Bersihkan session data dan buat ulang token CSRF demi keamanan
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/login');
+
+        // Diarahkan ke landing page utama setelah logout
+        return redirect()->route('home');
     }
 }

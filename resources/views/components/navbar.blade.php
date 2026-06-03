@@ -17,13 +17,86 @@
             
             <a href="#" class="text-slate-600 hover:text-teal-500 transition">About us</a>
             
-            <a href="{{ route('products.index') }}" class="{{ request()->routeIs('products.index') ? 'text-teal-500 border-b-2 border-teal-500 pb-1' : 'text-slate-600 hover:text-teal-500 transition' }}">
-                Product
-            </a>
-            
-            <a href="#" class="text-slate-600 hover:text-teal-500 transition">Purchase</a>
-            <a href="#" class="text-slate-600 hover:text-teal-500 transition">Contact</a>
-        </div>
+            @guest
+                <a href="javascript:void(0)" onclick="peringatanLogin()" class="text-slate-600 hover:text-teal-500 transition">Product</a>
+                <a href="javascript:void(0)" onclick="peringatanLogin()" class="text-slate-600 hover:text-teal-500 transition">Purchase</a>
+            @endguest
 
+            @auth
+                <a href="{{ route('products.index') }}" class="{{ request()->routeIs('products.index') ? 'text-teal-500 border-b-2 border-teal-500 pb-1' : 'text-slate-600 hover:text-teal-500 transition' }}">
+                    Product
+                </a>
+                <a href="#" class="text-slate-600 hover:text-teal-500 transition">Purchase</a>
+            @endauth
+            
+            <a href="#" class="text-slate-600 hover:text-teal-500 transition">Contact</a>
+
+            <div class="h-5 w-[1px] bg-gray-200 hidden sm:block"></div>
+
+            <div class="flex items-center space-x-4">
+                @guest
+                    <a href="{{ route('login') }}" class="text-slate-600 hover:text-teal-500 transition">
+                        Sign In
+                    </a>
+                    <a href="{{ route('register') }}" class="bg-[#14b8a6] text-white px-4 py-2 rounded-sm text-xs font-bold hover:bg-[#0d9488] transition shadow-sm">
+                        Sign Up
+                    </a>
+                @endguest
+
+                @auth
+                    <div class="flex items-center space-x-3">
+                        <span class="text-xs font-bold text-slate-700 bg-slate-50 px-2.5 py-1.5 rounded border border-gray-200">
+                            👋 {{ Auth::user()->name }}
+                        </span>
+                        
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="inline m-0 p-0">
+                            @csrf
+                            <button type="button" onclick="konfirmasiLogout()" class="text-xs font-bold text-red-500 hover:text-red-700 transition cursor-pointer bg-transparent border-none p-0">
+                                Logout
+                            </button>
+                        </form>
+                    </div>
+                @endauth
+            </div>
+
+        </div>
     </div>
 </nav>
+
+<script>
+    // 1. Fungsi Pop-up Peringatan Login sebelum masuk ke fitur
+    function peringatanLogin() {
+        Swal.fire({
+            title: 'Akses Terbatas!',
+            text: 'Silahkan Login / Registrasi Terlebih Dahulu!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#14b8a6',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Login Sekarang',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "{{ route('login') }}";
+            }
+        });
+    }
+
+    // 2. Fungsi Pop-up Konfirmasi Keluar/Logout
+    function konfirmasiLogout() {
+        Swal.fire({
+            title: 'Keluar Akun?',
+            text: 'Apakah anda yakin Logout?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Ya, Keluar',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('logout-form').submit();
+            }
+        });
+    }
+</script>

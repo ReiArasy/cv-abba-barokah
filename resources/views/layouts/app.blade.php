@@ -12,7 +12,9 @@
 </head>
 <body class="bg-gray-100">
 
-    @include('components.navbar')
+    @if(!request()->is('login') && !request()->is('register'))
+        @include('components.navbar')
+    @endif
 
     <!-- Hapus class container dan mx-auto di sini agar konten bisa penuh -->
     <main>
