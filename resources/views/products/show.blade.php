@@ -117,7 +117,6 @@
             width:40px;
         }
 
-        /* Mengatur agar input number bawaan tidak terlihat seperti kolom input biasa */
         .qty-input-hidden {
             width: 50px;
             border: none;
@@ -128,7 +127,6 @@
             outline: none;
         }
         
-        /* Menghilangkan arrow spinner bawaan browser pada input number */
         .qty-input-hidden::-webkit-outer-spin-button,
         .qty-input-hidden::-webkit-inner-spin-button {
             -webkit-appearance: none;
@@ -155,7 +153,7 @@
         }
 
         .btn-buy{
-            background:#111827; /* Warna gelap Charcoal sesuai prototype */
+            background:#111827; 
             color:white;
             border:none;
             padding:12px 22px;
@@ -164,15 +162,26 @@
             text-decoration: none;
             display: inline-block;
             text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .btn-buy:hover {
+            background:#1f2937;
         }
 
         .btn-cart{
-            border:2px solid #111827; /* Outline Charcoal menyesuaikan prototype */
+            border:2px solid #111827; 
             color:#111827;
             background:white;
             padding:10px 22px;
             border-radius:8px;
             font-weight:600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cart:hover {
+            background:#111827;
+            color:white;
         }
 
         footer{
@@ -249,7 +258,7 @@
             </span>
         </div>
 
-        {{-- Product Image Dinamis (Aman dari Array to String Error) --}}
+        {{-- Product Image Dinamis --}}
         <div class="product-image mb-5">
             @php
                 $displayImage = null;
@@ -284,7 +293,8 @@
         <form action="{{ route('cart.add', $product->id) }}" method="POST">
             @csrf
             
-            {{-- Product Content Layout --}}
+            <input type="hidden" name="product_id" value="{{ $product->id }}">
+            
             <div class="row g-4">
 
                 {{-- Description Box --}}
@@ -315,7 +325,6 @@
                             <div class="qty-box">
                                 <button type="button" onclick="decreaseQty()">-</button>
                                 
-                                {{-- Input Tersembunyi Berbentuk Teks agar Nilai Masuk ke Request POST --}}
                                 <input type="number" 
                                        id="quantity" 
                                        name="quantity" 
@@ -342,21 +351,27 @@
                             Rp {{ number_format($product->price, 0, ',', '.') }}
                         </div>
 
+                        {{-- PERBAIKAN TOMBOL DISINI --}}
                         <div class="d-flex gap-3 flex-wrap">
                             @if($product->stock > 0 && $product->is_active)
-                                <button type="submit" class="btn-buy">
-                                    Masukkan Keranjang
+                                
+                                {{-- Tombol Masukkan Keranjang --}}
+                                <button type="submit" class="btn-buy flex-grow-1 text-center">
+                                    <i class="fa-solid fa-cart-plus me-2"></i> Masukkan Keranjang
                                 </button>
                                 
-                                <a href="{{ route('products.index') }}" class="btn-cart">
-                                    Order
-                                </a>
+                                {{-- Tombol Order Langsung (Otomatis diarahkan ke checkout langsung) --}}
+                                <button type="submit" formaction="{{ route('orders.direct') }}" class="btn-cart flex-grow-1 text-center">
+                                    Order Sekarang
+                                </button>
+
                             @else
                                 <div class="alert alert-light border w-100 py-2 text-center text-muted mb-0" role="alert" style="font-size: 0.95rem;">
                                     <i class="fa-solid fa-slash-circle me-2"></i> Produk Tidak Tersedia
                                 </div>
                             @endif
                         </div>
+                        {{-- AKHIR PERBAIKAN TOMBOL --}}
 
                     </div>
 

@@ -110,7 +110,7 @@
         transition: color 0.2s ease-in-out;
     }
     .btn-action-delete:hover {
-        color: #b91c1c; /* Lebih gelap saat dihover */
+        color: #b91c1c;
     }
     .total-label {
         font-size: 0.85rem;
@@ -133,7 +133,7 @@
         background-color: #4f46e5;
     }
     
-    /* CSS Kustom untuk Tombol SweetAlert agar menyatu dengan tema */
+    /* CSS Kustom untuk Tombol SweetAlert */
     .swal2-confirm-custom { background-color: #ef4444 !important; color: white !important; border-radius: 6px !important; padding: 10px 24px !important; font-weight: 600 !important; }
     .swal2-cancel-custom { background-color: #f1f5f9 !important; color: #475569 !important; border-radius: 6px !important; padding: 10px 24px !important; font-weight: 600 !important; margin-right: 10px !important;}
     .swal2-confirm-checkout { background-color: #6366f1 !important; color: white !important; border-radius: 6px !important; padding: 10px 24px !important; font-weight: 600 !important; }
@@ -270,11 +270,13 @@
                         <div class="price-text" style="font-size: 1.35rem;">Rp {{ number_format($totalCheckoutPrice, 0, ',', '.') }}</div>
                     </div>
                     
-                    <form action="{{ route('cart.checkout') }}" method="POST" class="m-0">
+                    <form action="{{ route('checkout') }}" method="POST" class="m-0">
                         @csrf
-                        <button type="button" onclick="confirmCheckout(this)" class="btn-checkout-submit shadow-sm">Checkout</button>
+                        <button type="button" class="btn-checkout-submit" onclick="confirmCheckout(this)">
+                            Checkout Sekarang
+                        </button>
                     </form>
-                </div>
+                    </div>
 
             </div>
         @endif
@@ -316,15 +318,14 @@
             showCancelButton: true,
             confirmButtonText: 'Ya, Hapus!',
             cancelButtonText: 'Batal',
-            reverseButtons: true, // Posisikan tombol batal di kiri
+            reverseButtons: true, 
             customClass: {
                 confirmButton: 'swal2-confirm-custom',
                 cancelButton: 'swal2-cancel-custom'
             },
-            buttonsStyling: false // Mematikan style bawaan agar menggunakan customClass
+            buttonsStyling: false 
         }).then((result) => {
             if (result.isConfirmed) {
-                // Jika user klik Ya, submit form terdekat (form delete item)
                 button.closest('form').submit();
             }
         });
