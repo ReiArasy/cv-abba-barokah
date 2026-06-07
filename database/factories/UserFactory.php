@@ -25,10 +25,17 @@ class UserFactory extends Factory
     {
         return [
             'name' => fake()->name(),
+            'username' => fake()->unique()->userName(), // Tambahan kolom username
             'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
-            'remember_token' => Str::random(10),
+            
+            // Tambahan kolom wajib sesuai form register customer kamu:
+            'phone' => '081234567890',
+            'alamat_lengkap' => 'Jl. Tlogobendung No. 10, Gresik',
+            'provinsi' => 'Jawa Timur',
+            'kota' => 'Gresik',
+            'role' => 'customer', // Default role untuk testing customer
+            
         ];
     }
 
