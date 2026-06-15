@@ -220,7 +220,7 @@
                     </div>
 
                     <div class="col-md-2 d-flex align-items-center justify-content-center">
-                        <form action="{{ route('cart.update', $item->id) }}" method="POST" class="d-flex align-items-center justify-content-center m-0">
+                        <form action="{{ route('cart.update', $item->product_id) }}" method="POST" class="d-flex align-items-center justify-content-center m-0">
                             @csrf
                             @method('PATCH')
                             <button type="button" class="btn-qty-minus" onclick="changeQtyValue(this, -1)"><i class="fa-solid fa-minus"></i></button>
@@ -233,7 +233,7 @@
                     <div class="col-md-3 text-end" style="padding-right: 5px;">
                         <div class="price-text">Rp {{ number_format($item->quantity * $item->product->price, 0, ',', '.') }}</div>
                         
-                        <form action="{{ route('cart.remove', $item->id) }}" method="POST" class="mt-2 m-0">
+                       <form action="{{ route('cart.remove', $item->product_id) }}" method="POST" class="mt-2 m-0">
                             @csrf
                             @method('DELETE')
                             <button type="button" onclick="confirmDelete(this, '{{ $item->product->name }}')" class="btn-action-delete" style="font-size: 0.85rem;">

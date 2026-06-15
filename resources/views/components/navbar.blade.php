@@ -32,7 +32,7 @@
             <a href="#" class="text-slate-600 hover:text-teal-500 transition">Contact</a>
 
             <div class="h-5 w-[1px] bg-gray-200 hidden sm:block"></div>
-
+            
             <div class="flex items-center space-x-4">
                 @guest
                     <a href="{{ route('login') }}" class="text-slate-600 hover:text-teal-500 transition">
@@ -45,6 +45,23 @@
 
                 @auth
                     <div class="flex items-center space-x-3">
+                        
+                        @php
+                            $cart = \App\Models\Cart::with('items')->where('user_id', Auth::id())->first();
+                            $cartItemCount = $cart ? $cart->items->sum('quantity') : 0;
+                        @endphp
+
+                        <a href="{{ route('cart.index') }}" class="relative inline-flex items-center p-2 text-slate-600 hover:text-teal-500 transition-colors mr-2">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                            
+                            @if($cartItemCount > 0)
+                                <div class="absolute inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-[#14b8a6] border-2 border-white rounded-full -top-1 -right-1">
+                                    {{ $cartItemCount > 99 ? '99+' : $cartItemCount }}
+                                </div>
+                            @endif
+                        </a>
                         <span class="text-xs font-bold text-slate-700 bg-slate-50 px-2.5 py-1.5 rounded border border-gray-200">
                             👋 {{ Auth::user()->name }}
                         </span>

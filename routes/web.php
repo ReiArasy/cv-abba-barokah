@@ -40,8 +40,8 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     // -- ROUTES KERANJANG (CART) --
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.add');
-    Route::patch('/cart/update/{cartItem}', [CartController::class, 'update'])->name('cart.update');
-    Route::delete('/cart/remove/{cartItem}', [CartController::class, 'remove'])->name('cart.remove');
+    Route::patch('/cart/update/{product_id}', [CartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart/remove/{product_id}', [CartController::class, 'remove'])->name('cart.remove');
     
     // -- ROUTES ORDER & MIDTRANS --
     Route::post('/orders/checkout', [OrderController::class, 'checkout'])->name('checkout');
