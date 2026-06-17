@@ -219,15 +219,21 @@
                         <div class="price-text">Rp {{ number_format($item->product->price, 0, ',', '.') }}</div>
                     </div>
 
-                    <div class="col-md-2 d-flex align-items-center justify-content-center">
+                    <div class="col-md-2 d-flex flex-column align-items-center justify-content-center">
                         <form action="{{ route('cart.update', $item->product_id) }}" method="POST" class="d-flex align-items-center justify-content-center m-0">
                             @csrf
                             @method('PATCH')
                             <button type="button" class="btn-qty-minus" onclick="changeQtyValue(this, -1)"><i class="fa-solid fa-minus"></i></button>
+                            
                             <input type="hidden" name="quantity" value="{{ $item->quantity }}" class="qty-hidden-input">
-                            <span class="qty-display-number">{{ $item->quantity }}</span>
+                            <span class="qty-display-number mx-2" style="width: 30px; display: inline-block;">{{ $item->quantity }}</span>
+                            
                             <button type="button" class="btn-qty-plus" onclick="changeQtyValue(this, 1)" data-max="{{ $item->product->stock }}"><i class="fa-solid fa-plus"></i></button>
                         </form>
+                        
+                        <span class="qty-error-msg text-danger mt-1 fw-bold text-center" style="font-size: 0.75rem; display: none;">
+                            Stok max: {{ $item->product->stock }}
+                        </span>
                     </div>
 
                     <div class="col-md-3 text-end" style="padding-right: 5px;">
@@ -285,27 +291,54 @@
 </div>
 
 <script>
-    // Fungsi untuk memperbarui kuantitas (Plus & Minus)
+    // 1. Fungsi untuk memperbarui kuantitas (Plus & Minus)
     function changeQtyValue(button, direction) {
         const form = button.closest('form');
         const hiddenInput = form.querySelector('.qty-hidden-input');
         const displaySpan = form.querySelector('.qty-display-number');
+        const errorMsg = form.parentElement.querySelector('.qty-error-msg'); 
         
         let currentVal = parseInt(hiddenInput.value) || 1;
         let maxVal = parseInt(form.querySelector('.btn-qty-plus').getAttribute('data-max')) || 999;
         let newVal = currentVal + direction;
         
-        if (newVal >= 1 && newVal <= maxVal) {
+        if (newVal >= 1) {
+            // Selalu update angka di layar 
             hiddenInput.value = newVal;
             displaySpan.innerText = newVal;
-            form.submit();
-        } else if (newVal > maxVal) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Stok Terbatas',
-                text: 'Jumlah barang tidak boleh melebihi stok maksimal (' + maxVal + ')',
-                confirmButtonColor: '#6366f1'
-            });
+            
+            if (newVal > maxVal) {
+                // JIKA ANGKA MELEBIHI STOK:
+                displaySpan.style.color = '#ef4444'; // Ubah angka jadi merah
+                errorMsg.style.display = 'block';    // Munculkan pesan peringatan
+                form.classList.add('is-invalid-qty'); // Beri penanda form ini sedang error
+                
+                // Form sengaja TIDAK disubmit agar tidak error dari server backend
+            } else {
+                // JIKA ANGKA AMAN (Di bawah atau sama dengan stok):
+                displaySpan.style.color = '#0f172a'; // Kembalikan angka jadi hitam
+                errorMsg.style.display = 'none';     // Sembunyikan pesan peringatan
+                form.classList.remove('is-invalid-qty'); // Hapus penanda error
+                
+                // Submit form ke server untuk update database
+                form.submit(); 
+            }
+            
+            // Cek apakah tombol checkout perlu dimatikan
+            checkCheckoutStatus();
+        }
+    }
+
+    // 2. Fungsi untuk mematikan/menyalakan tombol Checkout
+    function checkCheckoutStatus() {
+        // Cek apakah ada class 'is-invalid-qty' yang aktif
+        let anyError = document.querySelectorAll('.is-invalid-qty').length > 0;
+        let checkoutBtn = document.querySelector('.btn-checkout-submit');
+        
+        if (checkoutBtn) {
+            checkoutBtn.disabled = anyError; 
+            checkoutBtn.style.opacity = anyError ? '0.5' : '1'; 
+            checkoutBtn.style.cursor = anyError ? 'not-allowed' : 'pointer'; 
         }
     }
 
@@ -333,6 +366,9 @@
 
     // Fungsi SweetAlert untuk Konfirmasi Checkout
     function confirmCheckout(button) {
+        // Jangan tampilkan sweet alert jika tombol sedang didisable (stok error)
+        if(button.disabled) return;
+
         Swal.fire({
             title: 'Konfirmasi Pesanan',
             text: 'Apakah Anda sudah yakin dengan pesanan ini dan ingin melanjutkan ke pembayaran?',
@@ -348,7 +384,6 @@
             buttonsStyling: false
         }).then((result) => {
             if (result.isConfirmed) {
-                // Jika user klik Ya, submit form checkout
                 button.closest('form').submit();
             }
         });

@@ -7,11 +7,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $product->name }} - Detail Produk</title>
 
-    {{-- Bootstrap --}}
+    {{-- Integrasi Tailwind CSS untuk Navbar --}}
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    {{-- Bootstrap untuk Grid dan Komponen Detail --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    {{-- Icon --}}
+    {{-- Icon & SweetAlert --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
         body{
@@ -165,7 +169,7 @@
             transition: all 0.3s ease;
         }
 
-        .btn-buy:hover {
+        .btn-buy:hover:not(:disabled) {
             background:#1f2937;
         }
 
@@ -179,7 +183,7 @@
             transition: all 0.3s ease;
         }
 
-        .btn-cart:hover {
+        .btn-cart:hover:not(:disabled) {
             background:#111827;
             color:white;
         }
@@ -226,7 +230,7 @@
         {{-- Header --}}
         <div class="d-flex justify-content-between align-items-center mb-4">
             <a href="{{ route('products.index') }}" class="back-btn">
-                <i class="fa-solid fa-arrow-left"></i>
+                <i class="fa-solid fa-arrow-left"></i> Kembali
             </a>
 
             <h2 class="fw-bold m-0">Details</h2>
@@ -290,7 +294,7 @@
         </div>
 
         {{-- Form Manajemen Order / Keranjang --}}
-        <form action="{{ route('cart.add', $product->id) }}" method="POST">
+        <form id="product-action-form" action="{{ route('cart.add', $product->id) }}" method="POST">
             @csrf
             
             <input type="hidden" name="product_id" value="{{ $product->id }}">
@@ -337,6 +341,11 @@
 
                                 <button type="button" onclick="increaseQty()">+</button>
                             </div>
+                            
+                            {{-- Pesan error stok (Disembunyikan secara default) --}}
+                            <div id="qty-error-msg" class="text-danger mt-2 fw-bold text-center" style="font-size: 0.85rem; display: none;">
+                                Stok maksimal produk: {{ $product->stock }}
+                            </div>
                         </div>
                     </div>
 
@@ -351,17 +360,16 @@
                             Rp {{ number_format($product->price, 0, ',', '.') }}
                         </div>
 
-                        {{-- PERBAIKAN TOMBOL DISINI --}}
                         <div class="d-flex gap-3 flex-wrap">
                             @if($product->stock > 0 && $product->is_active)
                                 
                                 {{-- Tombol Masukkan Keranjang --}}
-                                <button type="submit" class="btn-buy flex-grow-1 text-center">
+                                <button type="submit" id="btn-add-cart" class="btn-buy flex-grow-1 text-center">
                                     <i class="fa-solid fa-cart-plus me-2"></i> Masukkan Keranjang
                                 </button>
                                 
-                                {{-- Tombol Order Langsung (Otomatis diarahkan ke checkout langsung) --}}
-                                <button type="submit" formaction="{{ route('orders.direct') }}" class="btn-cart flex-grow-1 text-center">
+                                {{-- Tombol Order Langsung --}}
+                                <button type="submit" id="btn-direct-order" formaction="{{ route('orders.direct') }}" class="btn-cart flex-grow-1 text-center">
                                     Order Sekarang
                                 </button>
 
@@ -371,7 +379,6 @@
                                 </div>
                             @endif
                         </div>
-                        {{-- AKHIR PERBAIKAN TOMBOL --}}
 
                     </div>
 
@@ -408,14 +415,14 @@
             </div>
 
             <div class="col-lg-4 footer-menu ps-lg-5">
-                <a href="#">Home</a>
+                <a href="{{ url('/') }}">Home</a>
                 <a href="#">About us</a>
                 <a href="#">Purchase</a>
                 <a href="#">Contact</a>
             </div>
 
             <div class="col-lg-4 footer-menu">
-                <a href="#">Product</a>
+                <a href="{{ route('products.index') }}">Product</a>
                 <a href="#">Peralatan Kantor</a>
                 <a href="#">Souvenir</a>
             </div>
@@ -424,25 +431,95 @@
     </div>
 </footer>
 
-{{-- Script JS Counter Quantity Menyesuaikan Limitasi Stok Database --}}
+{{-- KUMPULAN JAVASCRIPT --}}
 <script>
+    // FUNGSI PERINGATAN LOGIN
+    function peringatanLogin() {
+        Swal.fire({
+            title: 'Akses Terbatas!',
+            text: 'Silahkan Login / Registrasi Terlebih Dahulu!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#14b8a6',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Login Sekarang',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "{{ route('login') }}";
+            }
+        });
+    }
+
+    // FUNGSI KONFIRMASI LOGOUT
+    function konfirmasiLogout() {
+        Swal.fire({
+            title: 'Keluar Akun?',
+            text: 'Apakah anda yakin Logout?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Ya, Keluar',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('logout-form').submit();
+            }
+        });
+    }
+
+    // FUNGSI KUANTITAS STOK
     function increaseQty(){
         const qtyInput = document.getElementById('quantity');
-        const maxStock = parseInt(qtyInput.getAttribute('max')) || 1;
-        let currentQty = parseInt(qtyInput.value) || 1;
+        let currentQty = parseInt(qtyInput.value) || 0;
 
-        if(currentQty < maxStock) {
-            qtyInput.value = currentQty + 1;
-        }
+        qtyInput.value = currentQty + 1;
+        checkStockLimit();
     }
 
     function decreaseQty(){
         const qtyInput = document.getElementById('quantity');
-        let currentQty = parseInt(qtyInput.value) || 1;
+        let currentQty = parseInt(qtyInput.value) || 0;
 
-        if(currentQty > 1){
-            qtyInput.value = currentQty - 1;
+        qtyInput.value = currentQty - 1;
+        checkStockLimit();
+    }
+
+    function checkStockLimit() {
+        const qtyInput = document.getElementById('quantity');
+        const maxStock = parseInt(qtyInput.getAttribute('max')) || 1;
+        const currentQty = parseInt(qtyInput.value) || 0;
+        
+        const errorMsg = document.getElementById('qty-error-msg');
+        const btnCart = document.getElementById('btn-add-cart');
+        const btnOrder = document.getElementById('btn-direct-order');
+
+        if (currentQty > maxStock) {
+            qtyInput.style.color = '#ef4444'; 
+            errorMsg.innerText = 'Stok maksimal produk: ' + maxStock; 
+            errorMsg.style.display = 'block'; 
+            disableButtons(btnCart, btnOrder);
+        } else if (currentQty < 1) {
+            qtyInput.style.color = '#ef4444'; 
+            errorMsg.innerText = 'Minimal order 1 produk'; 
+            errorMsg.style.display = 'block'; 
+            disableButtons(btnCart, btnOrder);
+        } else {
+            qtyInput.style.color = '#111827'; 
+            errorMsg.style.display = 'none'; 
+            enableButtons(btnCart, btnOrder);
         }
+    }
+
+    function disableButtons(btn1, btn2) {
+        if(btn1) { btn1.disabled = true; btn1.style.opacity = '0.5'; btn1.style.cursor = 'not-allowed'; }
+        if(btn2) { btn2.disabled = true; btn2.style.opacity = '0.5'; btn2.style.cursor = 'not-allowed'; }
+    }
+
+    function enableButtons(btn1, btn2) {
+        if(btn1) { btn1.disabled = false; btn1.style.opacity = '1'; btn1.style.cursor = 'pointer'; }
+        if(btn2) { btn2.disabled = false; btn2.style.opacity = '1'; btn2.style.cursor = 'pointer'; }
     }
 </script>
 

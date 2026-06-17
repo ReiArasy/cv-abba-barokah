@@ -27,37 +27,48 @@ class CartController extends Controller
             'quantity' => 'required|integer|min:1|max:' . $product->stock,
         ]);
 
-        $cart = Cart::firstOrCreate(['user_id' => Auth::id()]);
+        // Gunakan transaksi database agar data sinkron
+        DB::beginTransaction();
+        try {
+            $cart = Cart::firstOrCreate(['user_id' => Auth::id()]);
 
-        $cartItem = CartItem::where('cart_id', $cart->id)
-                            ->where('product_id', $product->id)
-                            ->first();
+            $cartItem = CartItem::where('cart_id', $cart->id)
+                                ->where('product_id', $product->id)
+                                ->first();
 
-        if ($cartItem) {
-            $newQuantity = $cartItem->quantity + $request->quantity;
-            if ($newQuantity > $product->stock) {
-                return redirect()->back()->with('error', 'Stok komoditas produk tidak mencukupi batas maksimal.');
+            if ($cartItem) {
+                $newQuantity = $cartItem->quantity + $request->quantity;
+                
+                // Pastikan sisa stok mencukupi untuk tambahan ini
+                if ($request->quantity > $product->stock) {
+                    return redirect()->back()->with('error', 'Stok produk tidak mencukupi untuk tambahan ini.');
+                }
+                
+                CartItem::where('cart_id', $cart->id)
+                        ->where('product_id', $product->id)
+                        ->update(['quantity' => $newQuantity]);
+            } else {
+                CartItem::create([
+                    'cart_id'    => $cart->id,
+                    'user_id'    => Auth::id(),
+                    'product_id' => $product->id,
+                    'quantity'   => $request->quantity,
+                    'price'      => $product->price,
+                ]);
             }
-            
-            // PERBAIKAN: Gunakan Query Builder langsung agar tidak mencari kolom 'id'
-            CartItem::where('cart_id', $cart->id)
-                    ->where('product_id', $product->id)
-                    ->update(['quantity' => $newQuantity]);
-                    
-        } else {
-            CartItem::create([
-                'cart_id'    => $cart->id,
-                'user_id'    => Auth::id(),
-                'product_id' => $product->id,
-                'quantity'   => $request->quantity,
-                'price'      => $product->price,
-            ]);
-        }
 
-        return redirect()->route('cart.index')->with('success', 'Produk berhasil dimasukkan ke keranjang belanja.');
+            // PERBAIKAN: Kurangi stok produk secara langsung
+            $product->decrement('stock', $request->quantity);
+
+            DB::commit();
+            return redirect()->route('cart.index')->with('success', 'Produk berhasil dimasukkan ke keranjang belanja.');
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Terjadi kesalahan sistem.');
+        }
     }
 
-    // PERBAIKAN: Parameter diubah menjadi $productId karena kita tidak punya $id di tabel cart_items
     public function update(Request $request, $productId) 
     {
         $cart = Cart::where('user_id', Auth::id())->first();
@@ -66,25 +77,47 @@ class CartController extends Controller
             abort(403, 'Data keranjang tidak valid.');
         }
 
-        // Cari item berdasarkan cart_id dan product_id
         $cartItem = CartItem::with('product')
                             ->where('cart_id', $cart->id)
                             ->where('product_id', $productId)
                             ->firstOrFail();
 
-        $request->validate([
-            'quantity' => 'required|integer|min:1|max:' . $cartItem->product->stock
-        ]);
+        $product = $cartItem->product;
+        $oldQuantity = $cartItem->quantity;
+        $newQuantity = $request->quantity;
 
-        // PERBAIKAN: Update menggunakan Query Builder
-        CartItem::where('cart_id', $cart->id)
-                ->where('product_id', $productId)
-                ->update(['quantity' => $request->quantity]);
+        // Cari selisih quantity (apakah user menambah atau mengurangi jumlah di keranjang)
+        $difference = $newQuantity - $oldQuantity;
 
-        return redirect()->back()->with('success', 'Jumlah belanjaan berhasil diperbarui.');
+        // Jika user menambah qty, cek apakah stok produk utamanya masih cukup
+        if ($difference > 0 && $difference > $product->stock) {
+            return redirect()->back()->with('error', 'Stok tidak mencukupi untuk penambahan.');
+        }
+
+        DB::beginTransaction();
+        try {
+            CartItem::where('cart_id', $cart->id)
+                    ->where('product_id', $productId)
+                    ->update(['quantity' => $newQuantity]);
+
+            
+            if ($difference > 0) {
+                // Jika keranjang ditambah, stok produk utama dikurangi
+                $product->decrement('stock', $difference);
+            } elseif ($difference < 0) {
+                // Jika keranjang dikurangi, stok produk utama dikembalikan
+                $product->increment('stock', abs($difference));
+            }
+
+            DB::commit();
+            return redirect()->back()->with('success', 'Jumlah belanjaan berhasil diperbarui.');
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Terjadi kesalahan sistem.');
+        }
     }
 
-    // PERBAIKAN: Parameter diubah menjadi $productId
     public function remove($productId)
     {
         $cart = Cart::where('user_id', Auth::id())->first();
@@ -93,17 +126,32 @@ class CartController extends Controller
             abort(403, 'Aksi tidak diizinkan.');
         }
 
-        // PERBAIKAN: Hapus menggunakan Query Builder
-        CartItem::where('cart_id', $cart->id)
-                ->where('product_id', $productId)
-                ->delete();
+        $cartItem = CartItem::where('cart_id', $cart->id)
+                            ->where('product_id', $productId)
+                            ->firstOrFail();
 
-        return redirect()->back()->with('success', 'Produk berhasil dikeluarkan dari keranjang.');
+        $product = Product::findOrFail($productId);
+
+        DB::beginTransaction();
+        try {
+            // PERBAIKAN: Kembalikan stok produk ke database karena batal dibeli (dihapus dari keranjang)
+            $product->increment('stock', $cartItem->quantity);
+
+            CartItem::where('cart_id', $cart->id)
+                    ->where('product_id', $productId)
+                    ->delete();
+
+            DB::commit();
+            return redirect()->back()->with('success', 'Produk berhasil dikeluarkan dari keranjang.');
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Terjadi kesalahan sistem.');
+        }
     }
 
     public function checkout()
     {
-        // Kode Checkout tidak perlu diubah, biarkan seperti aslinya
         $cart = Cart::with('items.product')->where('user_id', Auth::id())->first();
 
         if (!$cart || $cart->items->isEmpty()) {
@@ -116,9 +164,6 @@ class CartController extends Controller
             $totalPrice = 0;
 
             foreach ($cart->items as $item) {
-                if ($item->quantity > $item->product->stock) {
-                    return redirect()->route('cart.index')->with('error', "Stok barang produk {$item->product->name} tidak mencukupi untuk diproses.");
-                }
                 $totalPrice += $item->quantity * $item->product->price;
             }
 
@@ -141,10 +186,11 @@ class CartController extends Controller
                     'subtotal'   => $subtotal,
                 ]);
 
-                $item->product->decrement('stock', $item->quantity);
+                // PERBAIKAN PENTING:
+                // Baris $item->product->decrement('stock', $item->quantity); 
+                // DIHAPUS dari sini, karena stok sudah dipotong waktu klik 'add to cart'.
             }
 
-            // PERBAIKAN: Hapus isi cart menggunakan Query Builder
             CartItem::where('cart_id', $cart->id)->delete();
             $cart->delete();
 

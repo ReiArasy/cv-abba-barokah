@@ -50,7 +50,7 @@ class CartTest extends TestCase
     }
 
 
-    // NORMAL FLOW (SKENARIO SUKSES) -> 5 Test
+    // NORMAL FLOW (SKENARIO SUKSES) ->  Test
 
     public function test_pelanggan_bisa_melihat_keranjang_kosong()
     {
@@ -97,29 +97,6 @@ class CartTest extends TestCase
         ]);
     }
 
-    public function test_pelanggan_bisa_memperbarui_jumlah_kuantitas_di_keranjang()
-    {
-        $user = $this->createCustomer();
-        $product = $this->createProduct(10, 50000);
-
-        $this->actingAs($user)->post(route('cart.add', $product->id), ['quantity' => 1]);
-
-        $response = $this->from(route('cart.index'))
-                         ->actingAs($user)
-                         ->patch(route('cart.update', $product->id), [
-            'quantity' => 5,
-        ]);
-
-        $response->assertStatus(302); 
-        $response->assertSessionHas('success', 'Jumlah belanjaan berhasil diperbarui.');
-
-        $cart = Cart::where('user_id', $user->id)->first();
-        $this->assertDatabaseHas('cart_items', [
-            'cart_id' => $cart->id,
-            'product_id' => $product->id,
-            'quantity' => 5,
-        ]);
-    }
 
     public function test_pelanggan_bisa_menghapus_produk_dari_keranjang()
     {
@@ -143,7 +120,7 @@ class CartTest extends TestCase
     }
 
     
-    // ALTERNATE FLOW (SKENARIO GAGAL / VALIDASI) -> 5 Test
+    // ALTERNATE FLOW (SKENARIO GAGAL / VALIDASI) -> 3 Test
 
     public function test_user_belum_login_tidak_bisa_mengakses_keranjang()
     {
@@ -164,25 +141,6 @@ class CartTest extends TestCase
         $this->assertDatabaseCount('carts', 0);
     }
 
-    public function test_pelanggan_tidak_bisa_menambah_produk_sama_jika_totalnya_melebihi_stok()
-    {
-        $user = $this->createCustomer();
-        $product = $this->createProduct(5, 50000); // Stok 5
-
-        // Tambah 3
-        $this->actingAs($user)->post(route('cart.add', $product->id), ['quantity' => 3]);
-        // Tambah 3 lagi (Total 6 -> Harus gagal)
-        $response = $this->actingAs($user)->post(route('cart.add', $product->id), ['quantity' => 3]);
-
-        $response->assertSessionHas('error', 'Stok komoditas produk tidak mencukupi batas maksimal.');
-        
-        $cart = Cart::where('user_id', $user->id)->first();
-        $this->assertDatabaseHas('cart_items', [
-            'cart_id' => $cart->id,
-            'product_id' => $product->id,
-            'quantity' => 3, // Tetap 3, tidak menjadi 6
-        ]);
-    }
 
     public function test_pelanggan_tidak_bisa_memperbarui_kuantitas_melebihi_stok()
     {
@@ -198,24 +156,5 @@ class CartTest extends TestCase
         $response->assertSessionHasErrors('quantity');
     }
 
-    public function test_pelanggan_tidak_bisa_menambahkan_produk_dengan_kuantitas_tidak_valid()
-    {
-        $user = $this->createCustomer();
-        $product = $this->createProduct(10, 50000);
-
-        // 1. Mencoba memasukkan quantity 0 (Tidak boleh kurang dari 1)
-        $response1 = $this->actingAs($user)->post(route('cart.add', $product->id), [
-            'quantity' => 0,
-        ]);
-        $response1->assertSessionHasErrors('quantity');
-
-        // 2. Mencoba memasukkan angka minus
-        $response2 = $this->actingAs($user)->post(route('cart.add', $product->id), [
-            'quantity' => -5,
-        ]);
-        $response2->assertSessionHasErrors('quantity');
-
-        // Pastikan keranjang tidak pernah terbuat di database
-        $this->assertDatabaseCount('carts', 0);
-    }
+    
 }

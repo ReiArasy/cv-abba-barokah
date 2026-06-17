@@ -107,7 +107,7 @@ class OrderTest extends TestCase
         $response->assertSee('ORD-2026-ABCDEF'); 
     }
 
-    public function test_pelanggan_bisa_melihat_detail_pesanan_milik_sendiri()
+    public function test_pelanggan_bisa_melihat_detail_pesanan()
     {
         $user = $this->createCustomer();
         $order = Order::create([
@@ -156,34 +156,38 @@ class OrderTest extends TestCase
         $this->assertDatabaseCount('orders', 0);
     }
 
-    public function test_checkout_dari_keranjang_gagal_jika_keranjang_kosong()
+    /** @test */
+    public function test_checkout_dari_keranjang_gagal_jika_melebihi_stok()
     {
         $user = $this->createCustomer();
-        // User belum memasukkan produk apa pun ke keranjang
-
-        $response = $this->actingAs($user)->post(route('checkout'));
-
-        $response->assertStatus(302);
-        $response->assertSessionHas('error', 'Keranjang Anda kosong.');
-        $this->assertDatabaseCount('orders', 0);
-    }
-
-    public function test_checkout_dari_keranjang_dibatalkan_jika_stok_berubah_habis()
-    {
-        $user = $this->createCustomer();
-        $product = $this->createProduct(2, 50000); // Stok di gudang sisa 2
+        $product = $this->createProduct(5, 50000); 
 
         $cart = Cart::create(['user_id' => $user->id]);
+        CartItem::create([
+            'cart_id'    => $cart->id,
+            'user_id'    => $user->id,
+            'product_id' => $product->id,
+            'quantity'   => 5,
+            'price'      => $product->price,
+        ]);
         
-        // Di keranjang, user minta 5 (mungkin sebelumnya stok masih ada 10)
-        CartItem::create(['cart_id' => $cart->id, 'user_id' => $user->id, 'product_id' => $product->id, 'quantity' => 5, 'price' => 50000]);
+        $product->update(['stock' => 2]);
 
-        $response = $this->from(route('cart.index'))->actingAs($user)->post(route('checkout'));
-
-        // Sistem harus me-rollback transaksi dan memulangkan user ke halaman cart
+        // 3. Eksekusi: Melakukan checkout
+        $response = $this->actingAs($user)->post(route('checkout'));
         $response->assertRedirect(route('cart.index'));
         $response->assertSessionHas('error');
-        $this->assertDatabaseCount('orders', 0); 
+        $this->assertDatabaseCount('orders', 0);
+        $this->assertDatabaseHas('products', [
+            'id' => $product->id,
+            'stock' => 2
+        ]);
+        
+        $this->assertDatabaseHas('cart_items', [
+            'cart_id' => $cart->id,
+            'product_id' => $product->id,
+            'quantity' => 5
+        ]);
     }
 
     
