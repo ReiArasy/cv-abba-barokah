@@ -5,6 +5,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\HistoryController;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 
 /*
@@ -48,6 +49,9 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::post('/orders/direct', [OrderController::class, 'directCheckout'])->name('orders.direct');
     Route::get('/orders/history', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order:code}', [OrderController::class, 'show'])->name('orders.show');
+
+    Route::get('/purchase/history', [HistoryController::class, 'index'])->name('purchase.history');
+    Route::get('/purchase/{order:code}', [HistoryController::class, 'show'])->name('purchase.show');
 });
 
 /*

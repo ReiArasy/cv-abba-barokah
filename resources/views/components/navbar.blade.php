@@ -26,7 +26,7 @@
                 <a href="{{ route('products.index') }}" class="{{ request()->routeIs('products.index') ? 'text-teal-500 border-b-2 border-teal-500 pb-1' : 'text-slate-600 hover:text-teal-500 transition' }}">
                     Product
                 </a>
-                <a href="#" class="text-slate-600 hover:text-teal-500 transition">Purchase</a>
+                <a href="{{ route('purchase.history') }}" class="text-slate-600 hover:text-teal-500 transition">Purchase</a>
             @endauth
             
             <a href="#" class="text-slate-600 hover:text-teal-500 transition">Contact</a>
