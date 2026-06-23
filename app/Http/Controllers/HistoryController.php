@@ -14,6 +14,14 @@ use Illuminate\Support\Facades\Auth;
 
 class HistoryController extends Controller
 {
+    private function initMidtrans()
+    {
+        \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
+        \Midtrans\Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
+        \Midtrans\Config::$isSanitized = true;
+        \Midtrans\Config::$is3ds = true;
+    }
+
     public function index()
     {
         $user = Auth::user();

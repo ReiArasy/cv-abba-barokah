@@ -10,6 +10,7 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
+        $categories = \App\Models\Category::where('is_active', true)->get();
         // Gunakan query builder agar bisa menyaring data secara dinamis
         $query = Product::with('category');
 
@@ -20,16 +21,13 @@ class ProductController extends Controller
 
         // Fitur Filter berdasarkan slug/nama kategori (opsional, sesuaikan dengan struktur DB Anda)
         if ($request->has('category') && $request->category != '') {
-            $query->whereHas('category', function ($q) use ($request) {
-                $q->where('slug', $request->category) // atau 'name' tergantung value di option select Anda
-                  ->orWhere('name', 'like', '%' . $request->category . '%');
-            });
+            $query->where('category_id', $request->category);
         }
 
         // Mengambil data produk terbaru
         $products = $query->latest()->get();
 
-        return view('pages.home', compact('products'));
+        return view('pages.home', compact('products', 'categories'));
     }
 
     public function dashboard()

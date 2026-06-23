@@ -92,7 +92,7 @@
             </div>
 
             <div class="w-64">
-                @if($order->payment_status === 'unpaid')
+                @if($order->payment_status == 'unpaid' && isset($snapToken))
                     <button id="pay-button" class="w-full bg-[#3490dc] hover:bg-blue-600 text-white font-medium py-2 rounded mb-3 transition">
                         Bayar
                     </button>
@@ -106,29 +106,31 @@
 
     </div>
 </div>
-@endsection
-
-{{-- Script Midtrans Dipanggil Jika Status Unpaid dan ada SnapToken --}}
 @if($order->payment_status === 'unpaid' && $snapToken)
-    @section('scripts')
-    <script src="{{ env('MIDTRANS_IS_PRODUCTION') ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js' }}" data-client-key="{{ env('MIDTRANS_CLIENT_KEY') }}"></script>
+    
+    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ env('MIDTRANS_CLIENT_KEY') }}"></script>
+    
     <script type="text/javascript">
         document.getElementById('pay-button').onclick = function () {
             window.snap.pay('{{ $snapToken }}', {
                 onSuccess: function(result){
-                    window.location.reload();
+                    alert("Pembayaran berhasil!"); 
+                    window.location.reload(); 
                 },
                 onPending: function(result){
+                    alert("Menunggu status pembayaran!");
                     window.location.reload();
                 },
                 onError: function(result){
-                    alert("Pembayaran Gagal!");
+                    alert("Pembayaran gagal!");
+                    window.location.reload();
                 },
                 onClose: function(){
-                    alert('Anda menutup jendela pembayaran sebelum menyelesaikan transaksi.');
+                    alert("Anda menutup halaman pembayaran sebelum menyelesaikannya.");
                 }
             });
         };
     </script>
-    @endsection
+
 @endif
+@endsection
