@@ -45,7 +45,22 @@
                 <span class="absolute inset-y-0 left-4 flex items-center text-gray-400">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                 </span>
-                <input type="text" placeholder="Search product..." class="w-full pl-11 pr-4 py-3.5 rounded-sm text-gray-800 focus:outline-none shadow-xl text-sm">
+                <div class="w-full max-w-lg relative">
+                <form action="{{ route('products.index') }}" method="GET">
+                    <span class="absolute inset-y-0 left-4 flex items-center text-gray-400">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </span>
+            <input 
+                    type="text" 
+                    name="search"
+                    value="{{ request('search') }}"
+                    placeholder="Search product..." 
+                    class="w-full pl-11 pr-4 py-3.5 rounded-sm text-gray-800 focus:outline-none shadow-xl text-sm"
+                 >  
+            </form>
+            </div>
             </div>
         </div>
     </header>

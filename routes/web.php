@@ -58,6 +58,9 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
 
     // -- ROUTE ABOUT US --
     Route::get('/about-us', [AboutController::class, 'index'])->name('about.index');
+
+    Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+    Route::get('/dashboard', [ProductController::class, 'dashboard'])->name('dashboard');
 });
 
 /*

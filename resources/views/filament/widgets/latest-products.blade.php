@@ -17,9 +17,12 @@
 
                     <!-- Product Image -->
                     <div class="w-8 h-8 rounded-full overflow-hidden shrink-0">
-                        @if($product->image)
+                    @if($product->image)
+                        @php
+                                $imageSrc = is_array($product->image) ? head($product->image) : $product->image;
+                        @endphp
                             <img 
-                                src="{{ asset('storage/' . $product->image) }}" 
+                                src="{{ asset('storage/' . $product->imageSrc) }}" 
                                 alt="{{ $product->name }}" 
                                 class="w-full h-full object-cover"
                             >
