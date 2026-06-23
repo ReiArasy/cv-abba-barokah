@@ -5,6 +5,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\AboutController;
 use App\Http\Controllers\HistoryController;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 
@@ -26,6 +27,8 @@ Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'register'])->name('register.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/forgot-password', [AuthController::class, 'showForgotPassword'])->name('password.request');
+Route::post('/forgot-password', [AuthController::class, 'updatePassword'])->name('password.update');
 
 /*
 |--------------------------------------------------------------------------
@@ -52,6 +55,9 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
 
     Route::get('/purchase/history', [HistoryController::class, 'index'])->name('purchase.history');
     Route::get('/purchase/{order:code}', [HistoryController::class, 'show'])->name('purchase.show');
+
+    // -- ROUTE ABOUT US --
+    Route::get('/about-us', [AboutController::class, 'index'])->name('about.index');
 });
 
 /*

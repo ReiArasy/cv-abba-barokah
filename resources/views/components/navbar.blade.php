@@ -15,7 +15,15 @@
                 Home
             </a>
             
-            <a href="#" class="text-slate-600 hover:text-teal-500 transition">About us</a>
+            @guest
+            <a href="javascript:void(0)" onclick="peringatanLogin()" class="text-slate-600 hover:text-teal-500 transition">About us</a>
+            @endguest
+
+            @auth
+            <a href="{{ route('about.index') }}" class="{{ request()->routeIs('about.index') ? 'text-teal-500 border-b-2 border-teal-500 pb-1' : 'text-slate-600 hover:text-teal-500 transition' }}">
+            About us
+            </a>
+            @endauth
             
             @guest
                 <a href="javascript:void(0)" onclick="peringatanLogin()" class="text-slate-600 hover:text-teal-500 transition">Product</a>
@@ -29,7 +37,7 @@
                 <a href="{{ route('purchase.history') }}" class="text-slate-600 hover:text-teal-500 transition">Purchase</a>
             @endauth
             
-            <a href="#" class="text-slate-600 hover:text-teal-500 transition">Contact</a>
+            <a href="#main-footer" class="text-slate-600 hover:text-teal-500 transition">Contact</a>
 
             <div class="h-5 w-[1px] bg-gray-200 hidden sm:block"></div>
             

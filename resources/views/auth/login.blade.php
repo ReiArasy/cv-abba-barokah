@@ -4,7 +4,6 @@
 <div class="min-h-screen flex items-center justify-center bg-gray-50">
     <div class="max-w-4xl w-full bg-white shadow-lg rounded-lg overflow-hidden flex flex-col md:flex-row">
         
-        <!-- Sisi Kiri: Placeholder Gambar -->
         <div class="hidden md:flex md:w-1/2 bg-gray-100 items-center justify-center p-12">
             <div class="w-48 h-48 border-2 border-dashed border-gray-300 flex items-center justify-center rounded-lg">
                 <svg class="w-24 h-24 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -13,7 +12,6 @@
             </div>
         </div>
 
-        <!-- Sisi Kanan: Form Login -->
         <div class="w-full md:w-1/2 p-8">
             <div class="mb-8">
                 <h2 class="text-3xl font-bold text-gray-800">Sign In</h2>
@@ -37,15 +35,17 @@
                 </button>
             </form>
 
-            <p class="mt-6 text-center text-sm text-gray-600">
-                Don't have Account? <a href="{{ route('register') }}" class="text-blue-500 font-bold">Sign Up</a>
+            <p class="mt-6 text-center text-sm text-gray-600 space-x-2">
+                <span>Don't have Account?</span>
+                <a href="{{ route('register') }}" class="text-blue-500 font-bold hover:underline">Sign Up</a>
+                <span class="text-gray-300">|</span>
+                <a href="{{ route('password.request') }}" class="text-teal-600 font-bold hover:underline">Lupa Password?</a>
             </p>
         </div>
     </div>
 </div>
 
 <script>
-    // Munculkan Pop-up jika email/password salah (Error dari withErrors)
     @if ($errors->any())
         Swal.fire({
             icon: 'error',
@@ -55,7 +55,6 @@
         });
     @endif
 
-    // Munculkan Pop-up jika baru saja sukses registrasi (Flash session success)
     @if (session('success'))
         Swal.fire({
             icon: 'success',
@@ -65,5 +64,4 @@
         });
     @endif
 </script>
-
 @endsection

@@ -12,9 +12,9 @@
 </head>
 <body class="bg-gray-100">
 
-    @if(!request()->is('login') && !request()->is('register'))
-        @include('components.navbar')
-    @endif
+@if(!request()->is('login') && !request()->is('register') && !request()->is('forgot-password') && !request()->is('reset-password/*'))
+    @include('components.navbar')
+@endif
 
     <!-- Hapus class container dan mx-auto di sini agar konten bisa penuh -->
     <main>

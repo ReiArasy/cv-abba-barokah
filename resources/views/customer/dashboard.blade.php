@@ -18,6 +18,10 @@
         margin-right: -50vw;
     }
 
+    html {
+    scroll-behavior: smooth;
+    }
+
     .bg-teal-ui { background-color: #14b8a6; }
     .text-teal-ui { color: #14b8a6; }
     .text-dark-ui { color: #1e293b; }
@@ -126,7 +130,17 @@
                     </div>
                 </div>
             </div>
-            <button class="bg-teal-ui text-white px-10 py-3.5 rounded font-bold text-xs shadow-lg hover:brightness-110 transition">Order Produk</button>
+            @guest
+                <button type="button" onclick="peringatanLogin()" class="bg-teal-ui text-white px-10 py-3.5 rounded font-bold text-xs shadow-lg hover:brightness-110 transition cursor-pointer">
+                Order Produk
+            </button>
+            @endguest
+
+            @auth
+                <a href="{{ route('products.index') }}" class="inline-block text-center bg-teal-ui text-white px-10 py-3.5 rounded font-bold text-xs shadow-lg hover:brightness-110 transition no-underline">
+                Order Produk
+            </a>
+            @endauth
         </div>
     </section>
 
@@ -137,11 +151,10 @@
             <p class="text-gray-500 text-xs max-w-3xl mx-auto mb-12 leading-relaxed italic">
                 Sollicitant homines non sunt nisi quam formae rerum principiis opiniones.<br>Mors enim est terribilis ut Socrati aliud esse apparet. Sed timor mortis est
             </p>
-            <button class="bg-teal-ui text-white px-12 py-4 rounded font-bold text-xs shadow-md">Shop Now</button>
         </div>
     </section>
 
-    <footer class="break-container bg-[#d1d5db] pt-20 pb-10">
+    <footer id="main-footer" class="break-container bg-[#d1d5db] pt-20 pb-10">
         <div class="container mx-auto px-12 grid grid-cols-1 md:grid-cols-4 gap-12">
             <div class="md:col-span-2">
                 <div class="bg-white/60 p-4 w-20 h-16 rounded mb-8 flex items-center justify-center border border-gray-300">

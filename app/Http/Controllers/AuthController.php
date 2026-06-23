@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
-
+use Illuminate\Support\Facades\Hash; 
 class AuthController extends Controller
 {
     public function showLogin()
@@ -28,12 +28,11 @@ class AuthController extends Controller
 
             // LOGIKA PENGARAHAN BERDASARKAN ROLE
             if ($user->role === 'admin') {
-                return redirect('/admin'); // Dashboard Filament untuk Admin
+                return redirect('/admin'); 
             } elseif ($user->role === 'customer') {
-                return redirect()->intended(route('home')); // Halaman Baru untuk Customer (Mendarat ke Landing Page)
+                return redirect()->intended(route('home')); 
             }
 
-            // Default jika role tidak dikenal
             return redirect('/');
         }
 
@@ -85,12 +84,51 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         Auth::logout();
-
-        // Bersihkan session data dan buat ulang token CSRF demi keamanan
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
-        // Diarahkan ke landing page utama setelah logout
         return redirect()->route('home');
+    }
+
+    // ============================================================
+    // FITUR LUPA PASSWORD
+    // ============================================================
+
+    public function showForgotPassword()
+    {
+        return view('auth.forgot-password');
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $messages = [
+            'email.required'    => 'Email wajib diisi lengkap.',
+            'email.email'       => 'Format email tidak valid.',
+            'email.exists'      => 'Email tidak terdaftar', 
+            'password.required' => 'Password wajib diisi lengkap.',
+            'password.min'      => 'Password minimal :min karakter.',
+            'password.confirmed'=> 'Konfirmasi password baru tidak cocok', 
+        ];
+
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+            'password' => 'required|string|min:8|confirmed',
+        ], $messages);
+
+        // Ambil data user berdasarkan email yang diinput
+        $user = User::where('email', $request->email)->first();
+
+        // REVISI LOGIKA: Cek apakah password baru sama dengan password yang saat ini aktif
+        if (Hash::check($request->password, $user->password)) {
+            return back()->withErrors([
+                'password' => 'Password baru tidak boleh sama dengan password lama Anda.'
+            ])->withInput();
+        }
+
+        // Jika tidak sama, lakukan proses update seperti biasa
+        $user->update([
+            'password' => bcrypt($request->password)
+        ]);
+
+        return redirect()->route('login')->with('success', 'Password berhasil diperbarui! Silakan gunakan password baru Anda.');
     }
 }
