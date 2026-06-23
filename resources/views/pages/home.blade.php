@@ -28,8 +28,11 @@
                     <label class="text-xs font-bold text-dark-ui mb-1.5">Kategori</label>
                     <select name="category" class="w-full bg-white border border-gray-300 rounded px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:border-teal-ui shadow-sm">
                         <option value="">Semua Kategori</option>
-                        <option value="kebutuhan-kantor">Kebutuhan Kantor</option>
-                        <option value="souvenir">Souvenir</option>
+                        @foreach($categories as $category)
+                            <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
+                                {{ $category->name }}
+                            </option>
+                        @endforeach
                     </select>
                 </div>
 
