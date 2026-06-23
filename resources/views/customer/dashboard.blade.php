@@ -170,34 +170,42 @@
     </section>
 
     <footer id="main-footer" class="break-container bg-[#d1d5db] pt-20 pb-10">
-        <div class="container mx-auto px-12 grid grid-cols-1 md:grid-cols-4 gap-12">
-            <div class="md:col-span-2">
-                <div class="bg-white/60 p-4 w-20 h-16 rounded mb-8 flex items-center justify-center border border-gray-300">
-                    <div class="w-8 h-6 bg-gray-300"></div>
-                </div>
-                <h3 class="font-extrabold text-dark-ui leading-tight mb-6 uppercase text-base">
-                    Membangun kualitas dan<br>menyediakan kepercayaan
-                </h3>
-                <div class="text-xs text-dark-ui/80 space-y-3 leading-relaxed">
-                    <p class="italic">Jl. MH Thamrin 3/10, Desa<br>Tlogobendung, Gresik, Jawa Timur</p>
-                    <p class="font-bold text-sm">+62 882-1712-6768</p>
-                    <p class="font-medium">ABBABAROKAH@gmail.com</p>
-                </div>
-            </div>
-            <div class="flex flex-col space-y-4">
-                <a href="#" class="font-extrabold text-dark-ui text-sm">Home</a>
-                <a href="#" class="font-extrabold text-dark-ui text-sm">About us</a>
-                <a href="#" class="font-extrabold text-dark-ui text-sm">Purchase</a>
-                <a href="#" class="font-extrabold text-dark-ui text-sm">Contact</a>
-            </div>
-            <div>
-                <p class="font-extrabold text-dark-ui text-sm mb-6 uppercase tracking-wider">Product</p>
-                <ul class="text-xs text-gray-600 space-y-3 italic">
-                    <li>Peralatan Kantor</li>
-                    <li>Souvenir</li>
-                </ul>
-            </div>
+    <div class="container mx-auto px-12 grid grid-cols-1 md:grid-cols-4 gap-12">
+    <div class="md:col-span-2">
+        <div class="bg-white/60 p-4 w-20 h-16 rounded mb-8 flex items-center justify-center border border-gray-300">
+            <div class="w-8 h-6 bg-gray-300"></div>
         </div>
+        <h3 class="font-extrabold text-dark-ui leading-tight mb-6 uppercase text-base">
+            Membangun kualitas dan<br>menyediakan kepercayaan
+        </h3>
+        <div class="text-xs text-dark-ui/80 space-y-3 leading-relaxed">
+            <p class="italic">Jl. MH Thamrin 3/10, Desa<br>Tlogobendung, Gresik, Jawa Timur</p>
+            <p class="font-bold text-sm">+62 882-1712-6768</p>
+            <p class="font-medium">ABBABAROKAH@gmail.com</p>
+        </div>
+    </div>
+
+    <div class="flex flex-col space-y-6 md:col-start-4 md:items-end md:text-right">
+        <a href="{{ route('home') }}" class="font-extrabold text-dark-ui text-sm hover:text-teal-500 transition">Home</a>
+        <a href="{{ route('about.index') }}" class="font-extrabold text-dark-ui text-sm hover:text-teal-500 transition">About us</a>
+        
+        @guest
+            <a href="javascript:void(0)" onclick="peringatanLogin()" class="font-extrabold text-dark-ui text-sm hover:text-teal-500 transition">Product</a>
+        @endguest
+        @auth
+            <a href="{{ route('products.index') }}" class="font-extrabold text-dark-ui text-sm hover:text-teal-500 transition">Product</a>
+        @endauth
+
+        @guest
+            <a href="javascript:void(0)" onclick="peringatanLogin()" class="font-extrabold text-dark-ui text-sm hover:text-teal-500 transition">Purchase</a>
+        @endguest
+        @auth
+            <a href="{{ route('purchase.history') }}" class="font-extrabold text-dark-ui text-sm hover:text-teal-500 transition">Purchase</a>
+        @endauth
+        
+        <a href="{{ route('home') }}#main-footer" class="font-extrabold text-dark-ui text-sm hover:text-teal-500 transition">Contact</a>
+    </div>
+</div>
         <div class="container mx-auto px-12 mt-20 border-t border-gray-400/30 pt-8 text-center">
             <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">&copy; 2026 CV ABBA BAROKAH. All Rights Reserved.</p>
         </div>

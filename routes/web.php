@@ -21,6 +21,9 @@ Route::get('/', function () {
     return view('customer.dashboard', compact('products'));
 })->name('home');
 
+// -- ROUTE ABOUT US (SEKARANG SUDAH PUBLIK) --
+Route::get('/about-us', [AboutController::class, 'index'])->name('about.index');
+
 // Rutes Authentication (Halaman Login & Register)
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
@@ -55,9 +58,6 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
 
     Route::get('/purchase/history', [HistoryController::class, 'index'])->name('purchase.history');
     Route::get('/purchase/{order:code}', [HistoryController::class, 'show'])->name('purchase.show');
-
-    // -- ROUTE ABOUT US --
-    Route::get('/about-us', [AboutController::class, 'index'])->name('about.index');
 
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');
     Route::get('/dashboard', [ProductController::class, 'dashboard'])->name('dashboard');
