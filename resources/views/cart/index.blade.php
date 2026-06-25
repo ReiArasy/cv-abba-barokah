@@ -70,7 +70,7 @@
     .price-text {
         font-size: 1.15rem;
         font-weight: 700;
-        color: #14b8a6; 
+        color: #14b8a6;
     }
     .btn-qty-minus, .btn-qty-plus {
         background-color: #6366f1;
@@ -83,6 +83,10 @@
         align-items: center;
         justify-content: center;
         font-size: 0.75rem;
+    }
+    .btn-qty-minus:disabled, .btn-qty-plus:disabled {
+        background-color: #c7d2fe;
+        cursor: not-allowed;
     }
     .qty-display-number {
         font-size: 1.05rem;
@@ -132,16 +136,17 @@
     .btn-checkout-submit:hover {
         background-color: #4f46e5;
     }
-    
-    /* CSS Kustom untuk Tombol SweetAlert */
-    .swal2-confirm-custom { background-color: #ef4444 !important; color: white !important; border-radius: 6px !important; padding: 10px 24px !important; font-weight: 600 !important; }
-    .swal2-cancel-custom { background-color: #f1f5f9 !important; color: #475569 !important; border-radius: 6px !important; padding: 10px 24px !important; font-weight: 600 !important; margin-right: 10px !important;}
-    .swal2-confirm-checkout { background-color: #6366f1 !important; color: white !important; border-radius: 6px !important; padding: 10px 24px !important; font-weight: 600 !important; }
+
+    .swal2-confirm-custom      { background-color: #ef4444 !important; color: white !important; border-radius: 6px !important; padding: 10px 24px !important; font-weight: 600 !important; }
+    .swal2-cancel-custom       { background-color: #f1f5f9 !important; color: #475569 !important; border-radius: 6px !important; padding: 10px 24px !important; font-weight: 600 !important; margin-right: 10px !important; }
+    .swal2-confirm-checkout    { background-color: #6366f1 !important; color: white !important; border-radius: 6px !important; padding: 10px 24px !important; font-weight: 600 !important; }
+    .swal2-confirm-stock-error { background-color: #6366f1 !important; color: white !important; border-radius: 6px !important; padding: 10px 24px !important; font-weight: 600 !important; }
 </style>
 
 <div class="container">
     <div class="cart-container shadow-sm border border-light">
-        
+
+        {{-- Header --}}
         <div class="position-relative d-flex align-items-center justify-content-center mb-5">
             <a href="{{ route('products.index') }}" class="back-arrow position-absolute start-0">
                 <i class="fa-solid fa-arrow-left"></i>
@@ -149,33 +154,39 @@
             <div class="cart-title">Keranjang</div>
         </div>
 
+        {{-- ===== POP-UP SESSION SUCCESS ===== --}}
         @if(session('success'))
             <script>
-                document.addEventListener('DOMContentLoaded', function() {
+                document.addEventListener('DOMContentLoaded', function () {
                     Swal.fire({
                         icon: 'success',
                         title: 'Berhasil!',
                         text: '{{ session('success') }}',
                         showConfirmButton: false,
-                        timer: 2000
+                        timer: 2000,
+                        timerProgressBar: true,
                     });
                 });
             </script>
         @endif
 
+        {{-- ===== POP-UP SESSION ERROR (dari controller) ===== --}}
         @if(session('error'))
             <script>
-                document.addEventListener('DOMContentLoaded', function() {
+                document.addEventListener('DOMContentLoaded', function () {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Oops...',
+                        title: 'Stok Tidak Mencukupi',
                         text: '{{ session('error') }}',
-                        confirmButtonColor: '#ef4444'
+                        confirmButtonText: 'Mengerti',
+                        customClass: { confirmButton: 'swal2-confirm-stock-error' },
+                        buttonsStyling: false,
                     });
                 });
             </script>
         @endif
 
+        {{-- ===== HEADER TABEL ===== --}}
         <div class="row mb-3 px-3 text-center d-none d-md-flex align-items-center">
             <div class="col-md-4 text-start" style="padding-left: 52px;">
                 <span class="table-header-text">Produk</span>
@@ -191,58 +202,97 @@
             </div>
         </div>
 
+        {{-- ===== DAFTAR ITEM KERANJANG ===== --}}
         @if($cart && !$cart->items->isEmpty())
             @foreach($cart->items as $item)
                 <div class="cart-item-box row g-0 align-items-center text-center">
-                    
+
+                    {{-- Produk --}}
                     <div class="col-md-4 text-start d-flex align-items-center gap-3">
                         <input type="checkbox" class="form-check-input custom-checkbox m-0">
-                        
+
                         <div class="img-placeholder-box flex-shrink-0">
                             @php
-                                $img = is_array($item->product->image) ? ($item->product->image[0] ?? null) : $item->product->image;
+                                $img = is_array($item->product->image)
+                                    ? ($item->product->image[0] ?? null)
+                                    : $item->product->image;
                             @endphp
                             @if($img)
-                                <img src="{{ asset('storage/' . $img) }}" alt="" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;">
+                                <img src="{{ asset('storage/' . $img) }}" alt=""
+                                     style="width:100%;height:100%;object-fit:cover;border-radius:4px;">
                             @else
                                 <i class="fa-regular fa-image"></i>
                             @endif
                         </div>
-                        
+
                         <div>
                             <div class="product-name">{{ $item->product->name }}</div>
                             <div class="product-category">{{ $item->product->category->name ?? 'Kategori Umum' }}</div>
                         </div>
                     </div>
 
+                    {{-- Harga Satuan --}}
                     <div class="col-md-3">
                         <div class="price-text">Rp {{ number_format($item->product->price, 0, ',', '.') }}</div>
                     </div>
 
+                    {{-- Kuantitas --}}
                     <div class="col-md-2 d-flex flex-column align-items-center justify-content-center">
-                        <form action="{{ route('cart.update', $item->product_id) }}" method="POST" class="d-flex align-items-center justify-content-center m-0">
+                        <form action="{{ route('cart.update', $item->product_id) }}" method="POST"
+                              class="d-flex align-items-center justify-content-center m-0">
                             @csrf
                             @method('PATCH')
-                            <button type="button" class="btn-qty-minus" onclick="changeQtyValue(this, -1)"><i class="fa-solid fa-minus"></i></button>
-                            
-                            <input type="hidden" name="quantity" value="{{ $item->quantity }}" class="qty-hidden-input">
-                            <span class="qty-display-number mx-2" style="width: 30px; display: inline-block;">{{ $item->quantity }}</span>
-                            
-                            <button type="button" class="btn-qty-plus" onclick="changeQtyValue(this, 1)" data-max="{{ $item->product->stock }}"><i class="fa-solid fa-plus"></i></button>
+
+                            {{--
+                                data-stock  = stok asli dari DB (tidak pernah disentuh cart)
+                                data-in-cart = qty item ini yang sudah ada di keranjang
+                            --}}
+                            <button type="button"
+                                    class="btn-qty-minus"
+                                    onclick="changeQtyValue(this, -1)"
+                                    {{ $item->quantity <= 1 ? 'disabled' : '' }}>
+                                <i class="fa-solid fa-minus"></i>
+                            </button>
+
+                            <input type="hidden" name="quantity"
+                                   value="{{ $item->quantity }}"
+                                   class="qty-hidden-input">
+
+                            <span class="qty-display-number mx-2"
+                                  style="width:30px;display:inline-block;">
+                                {{ $item->quantity }}
+                            </span>
+
+                            <button type="button"
+                                    class="btn-qty-plus"
+                                    onclick="changeQtyValue(this, 1)"
+                                    data-stock="{{ $item->product->stock }}"
+                                    data-product-name="{{ $item->product->name }}"
+                                    {{ $item->quantity >= $item->product->stock ? 'disabled' : '' }}>
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
                         </form>
-                        
-                        <span class="qty-error-msg text-danger mt-1 fw-bold text-center" style="font-size: 0.75rem; display: none;">
-                            Stok max: {{ $item->product->stock }}
-                        </span>
+
+                        {{-- Label stok tersisa di bawah tombol qty --}}
+                        <small class="text-muted mt-1" style="font-size:0.72rem;">
+                            Stok tersedia: <strong>{{ $item->product->stock }}</strong>
+                        </small>
                     </div>
 
-                    <div class="col-md-3 text-end" style="padding-right: 5px;">
-                        <div class="price-text">Rp {{ number_format($item->quantity * $item->product->price, 0, ',', '.') }}</div>
-                        
-                       <form action="{{ route('cart.remove', $item->product_id) }}" method="POST" class="mt-2 m-0">
+                    {{-- Total Harga + Hapus --}}
+                    <div class="col-md-3 text-end" style="padding-right:5px;">
+                        <div class="price-text">
+                            Rp {{ number_format($item->quantity * $item->product->price, 0, ',', '.') }}
+                        </div>
+
+                        <form action="{{ route('cart.remove', $item->product_id) }}" method="POST"
+                              class="mt-2 m-0">
                             @csrf
                             @method('DELETE')
-                            <button type="button" onclick="confirmDelete(this, '{{ $item->product->name }}')" class="btn-action-delete" style="font-size: 0.85rem;">
+                            <button type="button"
+                                    onclick="confirmDelete(this, '{{ $item->product->name }}')"
+                                    class="btn-action-delete"
+                                    style="font-size:0.85rem;">
                                 <i class="fa-solid fa-trash"></i> Hapus
                             </button>
                         </form>
@@ -251,38 +301,45 @@
                 </div>
             @endforeach
         @else
-            <div class="text-center py-5 border border-dashed rounded-3" style="border-color: #cbd5e1; border-style: dashed; border-width: 2px;">
-                <i class="fa-solid fa-basket-shopping text-muted mb-3" style="font-size: 3rem; color: #94a3b8; opacity: 0.5;"></i>
-                <p class="text-secondary mb-0" style="color: #64748b;">Belum ada barang di dalam keranjang Anda.</p>
+            <div class="text-center py-5 border rounded-3"
+                 style="border-color:#cbd5e1;border-style:dashed;border-width:2px;">
+                <i class="fa-solid fa-basket-shopping text-muted mb-3"
+                   style="font-size:3rem;color:#94a3b8;opacity:0.5;"></i>
+                <p class="text-secondary mb-0" style="color:#64748b;">
+                    Belum ada barang di dalam keranjang Anda.
+                </p>
             </div>
         @endif
 
+        {{-- ===== FOOTER CART ===== --}}
         @if($cart && !$cart->items->isEmpty())
             <div class="cart-footer-box row g-0 align-items-center">
-                
+
                 <div class="col-sm-5 d-flex align-items-center gap-3">
                     <input type="checkbox" class="form-check-input custom-checkbox m-0">
-                    <span class="fw-semibold text-dark" style="font-size: 0.95rem;">Pilih Semua ( {{ $cart->items->count() }} )</span>
+                    <span class="fw-semibold text-dark" style="font-size:0.95rem;">
+                        Pilih Semua ({{ $cart->items->count() }})
+                    </span>
                 </div>
-                
+
                 <div class="col-sm-7 d-flex align-items-center justify-content-sm-end gap-4 mt-3 mt-sm-0">
                     <div class="text-end">
                         @php
-                            $totalCheckoutPrice = $cart->items->sum(function($item) {
-                                return $item->quantity * $item->product->price;
-                            });
+                            $totalCheckoutPrice = $cart->items->sum(fn($item) => $item->quantity * $item->product->price);
                         @endphp
                         <div class="total-label">Total ({{ $cart->items->sum('quantity') }} Produk)</div>
-                        <div class="price-text" style="font-size: 1.35rem;">Rp {{ number_format($totalCheckoutPrice, 0, ',', '.') }}</div>
+                        <div class="price-text" style="font-size:1.35rem;">
+                            Rp {{ number_format($totalCheckoutPrice, 0, ',', '.') }}
+                        </div>
                     </div>
-                    
+
                     <form action="{{ route('checkout') }}" method="POST" class="m-0">
                         @csrf
                         <button type="button" class="btn-checkout-submit" onclick="confirmCheckout(this)">
                             Checkout Sekarang
                         </button>
                     </form>
-                    </div>
+                </div>
 
             </div>
         @endif
@@ -291,58 +348,55 @@
 </div>
 
 <script>
-    // 1. Fungsi untuk memperbarui kuantitas (Plus & Minus)
+    /**
+     * Tombol + / - kuantitas
+     * Saat melebihi stok → tampilkan SweetAlert error, angka TIDAK berubah.
+     * Saat valid       → submit form ke server.
+     */
     function changeQtyValue(button, direction) {
-        const form = button.closest('form');
-        const hiddenInput = form.querySelector('.qty-hidden-input');
-        const displaySpan = form.querySelector('.qty-display-number');
-        const errorMsg = form.parentElement.querySelector('.qty-error-msg'); 
-        
-        let currentVal = parseInt(hiddenInput.value) || 1;
-        let maxVal = parseInt(form.querySelector('.btn-qty-plus').getAttribute('data-max')) || 999;
-        let newVal = currentVal + direction;
-        
-        if (newVal >= 1) {
-            // Selalu update angka di layar 
-            hiddenInput.value = newVal;
-            displaySpan.innerText = newVal;
-            
-            if (newVal > maxVal) {
-                // JIKA ANGKA MELEBIHI STOK:
-                displaySpan.style.color = '#ef4444'; // Ubah angka jadi merah
-                errorMsg.style.display = 'block';    // Munculkan pesan peringatan
-                form.classList.add('is-invalid-qty'); // Beri penanda form ini sedang error
-                
-                // Form sengaja TIDAK disubmit agar tidak error dari server backend
-            } else {
-                // JIKA ANGKA AMAN (Di bawah atau sama dengan stok):
-                displaySpan.style.color = '#0f172a'; // Kembalikan angka jadi hitam
-                errorMsg.style.display = 'none';     // Sembunyikan pesan peringatan
-                form.classList.remove('is-invalid-qty'); // Hapus penanda error
-                
-                // Submit form ke server untuk update database
-                form.submit(); 
-            }
-            
-            // Cek apakah tombol checkout perlu dimatikan
-            checkCheckoutStatus();
+        const form          = button.closest('form');
+        const hiddenInput   = form.querySelector('.qty-hidden-input');
+        const displaySpan   = form.querySelector('.qty-display-number');
+        const minusBtn      = form.querySelector('.btn-qty-minus');
+        const plusBtn       = form.querySelector('.btn-qty-plus');
+
+        const stock       = parseInt(plusBtn.getAttribute('data-stock'))       || 1;
+        const productName = plusBtn.getAttribute('data-product-name')          || 'produk ini';
+        let   currentVal  = parseInt(hiddenInput.value)                        || 1;
+        const newVal      = currentVal + direction;
+
+        // ── Batas bawah (min 1) ──────────────────────────────────────────────
+        if (newVal < 1) return;
+
+        // ── Melebihi stok → SweetAlert error, batalkan perubahan ────────────
+        if (newVal > stock) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Stok Tidak Mencukupi',
+                html:
+                    `Stok <b>${productName}</b> hanya tersisa <b>${stock}</b>.<br>` +
+                    `Anda sudah memasukkan <b>${currentVal}</b> ke keranjang.<br><br>` +
+                    `Tidak bisa menambah lebih dari <b>${stock}</b>.`,
+                confirmButtonText: 'Mengerti',
+                customClass: { confirmButton: 'swal2-confirm-stock-error' },
+                buttonsStyling: false,
+            });
+            return; // angka di layar tetap, form TIDAK di-submit
         }
+
+        // ── Valid → update tampilan & submit ─────────────────────────────────
+        hiddenInput.value   = newVal;
+        displaySpan.innerText = newVal;
+
+        // Disable tombol minus jika sudah di angka 1
+        minusBtn.disabled = (newVal <= 1);
+        // Disable tombol plus jika sudah menyentuh stok maksimal
+        plusBtn.disabled  = (newVal >= stock);
+
+        form.submit();
     }
 
-    // 2. Fungsi untuk mematikan/menyalakan tombol Checkout
-    function checkCheckoutStatus() {
-        // Cek apakah ada class 'is-invalid-qty' yang aktif
-        let anyError = document.querySelectorAll('.is-invalid-qty').length > 0;
-        let checkoutBtn = document.querySelector('.btn-checkout-submit');
-        
-        if (checkoutBtn) {
-            checkoutBtn.disabled = anyError; 
-            checkoutBtn.style.opacity = anyError ? '0.5' : '1'; 
-            checkoutBtn.style.cursor = anyError ? 'not-allowed' : 'pointer'; 
-        }
-    }
-
-    // Fungsi SweetAlert untuk Konfirmasi Hapus Produk
+    // ── Konfirmasi hapus produk ───────────────────────────────────────────────
     function confirmDelete(button, productName) {
         Swal.fire({
             title: 'Hapus Produk?',
@@ -351,23 +405,20 @@
             showCancelButton: true,
             confirmButtonText: 'Ya, Hapus!',
             cancelButtonText: 'Batal',
-            reverseButtons: true, 
+            reverseButtons: true,
             customClass: {
                 confirmButton: 'swal2-confirm-custom',
-                cancelButton: 'swal2-cancel-custom'
+                cancelButton:  'swal2-cancel-custom',
             },
-            buttonsStyling: false 
+            buttonsStyling: false,
         }).then((result) => {
-            if (result.isConfirmed) {
-                button.closest('form').submit();
-            }
+            if (result.isConfirmed) button.closest('form').submit();
         });
     }
 
-    // Fungsi SweetAlert untuk Konfirmasi Checkout
+    // ── Konfirmasi checkout ───────────────────────────────────────────────────
     function confirmCheckout(button) {
-        // Jangan tampilkan sweet alert jika tombol sedang didisable (stok error)
-        if(button.disabled) return;
+        if (button.disabled) return;
 
         Swal.fire({
             title: 'Konfirmasi Pesanan',
@@ -379,13 +430,11 @@
             reverseButtons: true,
             customClass: {
                 confirmButton: 'swal2-confirm-checkout',
-                cancelButton: 'swal2-cancel-custom'
+                cancelButton:  'swal2-cancel-custom',
             },
-            buttonsStyling: false
+            buttonsStyling: false,
         }).then((result) => {
-            if (result.isConfirmed) {
-                button.closest('form').submit();
-            }
+            if (result.isConfirmed) button.closest('form').submit();
         });
     }
 </script>

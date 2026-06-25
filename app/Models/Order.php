@@ -17,7 +17,7 @@ class Order extends Model
         return $this->hasMany(OrderItem::class, 'order_id', 'id');
     }
 
-    // 2. Relasi ke tabel payments (opsional tapi penting untuk halaman detail)
+    // 2. Relasi ke tabel payments 
     public function payment()
     {
         return $this->hasOne(Payment::class, 'order_id', 'id');

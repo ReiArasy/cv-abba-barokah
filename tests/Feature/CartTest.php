@@ -14,7 +14,6 @@ class CartTest extends TestCase
 {
     use RefreshDatabase;
 
-     // Helper untuk membuat simulasi user
      
     private function createCustomer()
     {
@@ -23,17 +22,13 @@ class CartTest extends TestCase
         ]);
     }
 
-     // Helper pembuat produk yang ANTI-ERROR.
-     // Menggunakan forceFill agar dipastikan semua kolom terisi di database SQLite.
     private function createProduct($stock = 10, $price = 50000)
     {
-        // 1. Buat kategori
         $category = Category::firstOrCreate(
             ['name' => 'Kategori Test'],
             ['is_active' => true]
         );
 
-        // 2. Buat produk dengan forceFill untuk menembus aturan apa pun
         $product = new Product();
         $product->forceFill([
             'category_id' => $category->id,
@@ -50,7 +45,7 @@ class CartTest extends TestCase
     }
 
 
-    // NORMAL FLOW (SKENARIO SUKSES) ->  Test
+    // Normal Flow ->  4Test
 
     public function test_pelanggan_bisa_melihat_keranjang_kosong()
     {
@@ -120,7 +115,7 @@ class CartTest extends TestCase
     }
 
     
-    // ALTERNATE FLOW (SKENARIO GAGAL / VALIDASI) -> 3 Test
+    // Alternate Flow-> 3 Test
 
     public function test_user_belum_login_tidak_bisa_mengakses_keranjang()
     {
@@ -131,7 +126,7 @@ class CartTest extends TestCase
     public function test_pelanggan_tidak_bisa_menambahkan_produk_melebihi_stok()
     {
         $user = $this->createCustomer();
-        $product = $this->createProduct(5, 50000); // Stok dibuat hanya 5
+        $product = $this->createProduct(5, 50000); 
 
         $response = $this->actingAs($user)->post(route('cart.add', $product->id), [
             'quantity' => 10,
@@ -143,18 +138,24 @@ class CartTest extends TestCase
 
 
     public function test_pelanggan_tidak_bisa_memperbarui_kuantitas_melebihi_stok()
-    {
-        $user = $this->createCustomer();
-        $product = $this->createProduct(5, 50000); // Stok 5
+{
+    $user = $this->createCustomer();
+    $product = $this->createProduct(5, 50000);
 
-        $this->actingAs($user)->post(route('cart.add', $product->id), ['quantity' => 2]);
+    $this->actingAs($user)
+         ->post(route('cart.add', $product->id), [
+             'quantity' => 2
+         ]);
 
-        $response = $this->actingAs($user)->patch(route('cart.update', $product->id), [
-            'quantity' => 10,
-        ]);
+    $response = $this->actingAs($user)
+                     ->patch(route('cart.update', $product->id), [
+                         'quantity' => 10
+                     ]);
 
-        $response->assertSessionHasErrors('quantity');
-    }
-
+    $response->assertSessionHas(
+        'error',
+        'Stok tidak mencukupi untuk penambahan.'
+    );
+}
     
 }
