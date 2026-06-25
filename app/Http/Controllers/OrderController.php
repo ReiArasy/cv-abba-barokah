@@ -210,78 +210,88 @@ class OrderController extends Controller
     }
 
      //Callback Midtrans
-    public function callback(Request $request)
-    {
-        $serverKey = env('MIDTRANS_SERVER_KEY');
-
-        $hashed = hash(
-            "sha512",
-            $request->order_id .
-            $request->status_code .
-            $request->gross_amount .
-            $serverKey
-        );
-
-        if ($hashed == $request->signature_key) {
-
-            $order = Order::where(
-                'code',
-                $request->order_id
-            )->first();
-
-            if ($order) {
-
-                if (
-                    $request->transaction_status == 'capture' ||
-                    $request->transaction_status == 'settlement'
-                ) {
-
-                    $order->update([
-                        'status' => 'paid',
-                        'payment_status' => 'paid'
-                    ]);
-
-                    Payment::updateOrCreate(
-                        [
-                            'order_id' => $order->id
-                        ],
-                        [
-                            'payment_method' => $request->payment_type,
-                            'payment_status' => 'paid',
-                            'paid_at' => now(),
-                            'raw_response' => json_encode($request->all())
-                        ]
-                    );
-
-                } elseif (
-                    in_array(
-                        $request->transaction_status,
-                        ['cancel', 'deny', 'expire']
-                    )
-                ) {
-
-                    $order->update([
-                        'status' => 'cancelled',
-                        'payment_status' => 'failed',
-                        'snap_token' => null
-                    ]);
-
-                    Payment::updateOrCreate(
-                        [
-                            'order_id' => $order->id
-                        ],
-                        [
-                            'payment_method' => $request->payment_type,
-                            'payment_status' => 'failed',
-                            'raw_response' => json_encode($request->all())
-                        ]
-                    );
-                }
-            }
-        }
-
-        return response()->json([
-            'message' => 'Sukses'
-        ]);
-    }
+     public function callback(Request $request)
+     {
+         $serverKey = env('MIDTRANS_SERVER_KEY');
+     
+         $hashed = hash(
+             "sha512",
+             $request->order_id .
+             $request->status_code .
+             $request->gross_amount .
+             $serverKey
+         );
+     
+         if ($hashed == $request->signature_key) {
+     
+             // --- PERBAIKAN DI SINI ---
+             // Pisahkan string berdasarkan tanda '-'
+             // Jika formatnya 'ORD-1-171829384', maka:
+             // $parts[0] = 'ORD', $parts[1] = '1', $parts[2] = '171829384'
+             $parts = explode('-', $request->order_id);
+             
+             // Gabungkan kembali bagian code aslinya ('ORD-1')
+             $originalCode = $parts[0] . '-' . $parts[1];
+     
+             $order = Order::where(
+                 'code',
+                 $originalCode // Cari menggunakan code asli yang sudah dibersihkan
+             )->first();
+             // -------------------------
+     
+             if ($order) {
+     
+                 if (
+                     $request->transaction_status == 'capture' ||
+                     $request->transaction_status == 'settlement'
+                 ) {
+     
+                     $order->update([
+                         'status' => 'paid',
+                         'payment_status' => 'paid'
+                     ]);
+     
+                     Payment::updateOrCreate(
+                         [
+                             'order_id' => $order->id
+                         ],
+                         [
+                             'payment_method' => $request->payment_type,
+                             'payment_status' => 'paid',
+                             'paid_at' => now(),
+                             'raw_response' => json_encode($request->all())
+                         ]
+                     );
+     
+                 } elseif (
+                     in_array(
+                         $request->transaction_status,
+                         ['cancel', 'deny', 'expire']
+                     )
+                 ) {
+     
+                     $order->update([
+                         'status' => 'cancelled',
+                         'payment_status' => 'failed',
+                         'snap_token' => null
+                     ]);
+     
+                     Payment::updateOrCreate(
+                         [
+                             'order_id' => $order->id
+                         ],
+                         [
+                             'payment_method' => $request->payment_type,
+                             'payment_status' => 'failed',
+                             'raw_response' => json_encode($request->all())
+                         ]
+                     );
+                 }
+             }
+         }
+     
+         return response()->json([
+             'message' => 'Sukses'
+         ]);
+     }
 }

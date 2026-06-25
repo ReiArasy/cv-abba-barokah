@@ -40,20 +40,37 @@ class HistoryController extends Controller
         $snapToken = null;
 
         if ($order->payment_status === 'unpaid') {
-            $this->initMidtrans();
-            
-            $params = [
-                'transaction_details' => [
-                    'order_id' => $order->code,
-                    'gross_amount' => (int) $order->total_price,
-                ],
-                'customer_details' => [
-                    'first_name' => Auth::user()->name,
-                    'email' => Auth::user()->email,
-                ],
-            ];
+            // 1. Cek dulu apakah order ini sudah punya snap_token di database
+            if ($order->snap_token) {
+                $snapToken = $order->snap_token;
+            } else {
+                // 2. Jika belum ada token, baru kita minta ke Midtrans
+                $this->initMidtrans();
+                
+                $params = [
+                    'transaction_details' => [
+                        // PERBAIKAN: Tambahkan timestamp agar order_id selalu unik di mata Midtrans
+                        'order_id' => $order->code . '-' . time(),
+                        'gross_amount' => (int) $order->total_price,
+                    ],
+                    'customer_details' => [
+                        'first_name' => Auth::user()->name,
+                        'email' => Auth::user()->email,
+                    ],
+                ];
 
-            $snapToken = \Midtrans\Snap::getSnapToken($params);
+                try {
+                    $snapToken = \Midtrans\Snap::getSnapToken($params);
+
+                    // 3. Simpan snap_token yang didapat ke database agar tidak request ulang terus-menerus
+                    $order->update([
+                        'snap_token' => $snapToken
+                    ]);
+                } catch (\Exception $e) {
+                    // Berjaga-jaga jika API Midtrans error agar aplikasi tidak langsung crash
+                    return back()->with('error', 'Gagal terhubung ke penyedia pembayaran: ' . $e->getMessage());
+                }
+            }
         }
 
         return view('purchase.show', compact('order', 'snapToken')); 
