@@ -44,7 +44,7 @@ class OrderTest extends TestCase
 
         return $product;
     }
- // NORMAL FLOW (SKENARIO SUKSES)
+ // Normal Flow
 
     public function test_pelanggan_berhasil_melakukan_checkout_langsung()
     {
@@ -57,12 +57,9 @@ class OrderTest extends TestCase
         ]);
 
         $order = Order::where('user_id', $user->id)->first();
-
-        // Pastikan dialihkan ke halaman detail pesanan
         $response->assertRedirect(route('orders.show', ['order' => $order->code]));
         $response->assertSessionHas('success');
-        
-        // Pastikan pesanan masuk database dan stok berkurang
+
         $this->assertDatabaseHas('orders', ['id' => $order->id, 'total_price' => 100000]);
         $this->assertDatabaseHas('products', ['id' => $product->id, 'stock' => 8]); 
     }
@@ -73,7 +70,7 @@ class OrderTest extends TestCase
         $product1 = $this->createProduct(10, 20000);
         $product2 = $this->createProduct(5, 30000);
 
-        // Siapkan data keranjang
+
         $cart = Cart::create(['user_id' => $user->id]);
         CartItem::create(['cart_id' => $cart->id, 'user_id' => $user->id, 'product_id' => $product1->id, 'quantity' => 2, 'price' => 20000]);
         CartItem::create(['cart_id' => $cart->id, 'user_id' => $user->id, 'product_id' => $product2->id, 'quantity' => 1, 'price' => 30000]);
@@ -84,7 +81,7 @@ class OrderTest extends TestCase
 
         $response->assertRedirect(route('orders.show', ['order' => $order->code]));
         
-        // Pastikan total harga sesuai (20rb*2 + 30rb = 70rb) dan keranjang dikosongkan
+    
         $this->assertDatabaseHas('orders', ['id' => $order->id, 'total_price' => 70000]);
         $this->assertDatabaseEmpty('cart_items'); 
     }
@@ -115,7 +112,7 @@ class OrderTest extends TestCase
             'code' => 'ORD-2026-BYPASS',
             'total_price' => 50000,
             'status' => 'paid',
-            'payment_status' => 'paid' // Dibuat paid agar API midtrans tidak diakses saat testing
+            'payment_status' => 'paid' 
         ]);
 
         $response = $this->actingAs($user)->get(route('orders.show', ['order' => $order->code]));
@@ -124,7 +121,7 @@ class OrderTest extends TestCase
         $response->assertViewIs('orders.show');
     }
 
-// ALTERNATE FLOW (SKENARIO GAGAL / VALIDASI)
+// Alternate Flow
 
         public function test_checkout_langsung_gagal_jika_stok_tidak_mencukupi()
     {
@@ -133,7 +130,7 @@ class OrderTest extends TestCase
 
         $response = $this->actingAs($user)->post(route('orders.direct'), [
             'product_id' => $product->id,
-            'quantity' => 10, // Coba beli 10
+            'quantity' => 10, 
         ]);
 
         $response->assertStatus(302);

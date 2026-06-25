@@ -9,9 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->string('status')->default('menunggu_pembayaran')->change();
-            $table->string('snap_token')->nullable()->after('status');
-            // Pastikan kolom 'code' dan 'total_price' sudah ada di tabel ini
+            $table->string('snap_token')->nullable()->after('payment_status');
         });
     }
 

@@ -22,38 +22,50 @@ class OrderController extends Controller
         \Midtrans\Config::$is3ds = true;
     }
 
-    // 1. Memproses Checkout dari Keranjang
+   
     public function checkout(Request $request)
     {
         $user = Auth::user();
-        $cart = Cart::with('items.product')->where('user_id', $user->id)->first();
+
+        $cart = Cart::with('items.product')
+            ->where('user_id', $user->id)
+            ->first();
 
         if (!$cart || $cart->items->count() == 0) {
             return redirect()->back()->with('error', 'Keranjang Anda kosong.');
         }
 
         DB::beginTransaction();
+
         try {
+
             $totalPrice = 0;
-            
+
             foreach ($cart->items as $item) {
+
                 if ($item->product->stock < $item->quantity) {
-                    throw new \Exception('Stok produk ' . $item->product->name . ' tidak mencukupi.');
+                    throw new \Exception(
+                        'Stok produk ' . $item->product->name . ' tidak mencukupi.'
+                    );
                 }
+
                 $totalPrice += ($item->quantity * $item->product->price);
             }
 
-            $orderCode = 'ORD-' . date('Y') . '-' . strtoupper(Str::random(6));
-            
+            do {
+                $orderCode = 'ORD-' . date('YmdHis') . '-' . strtoupper(Str::random(6));
+            } while (Order::where('code', $orderCode)->exists());
+
             $order = Order::create([
                 'user_id' => $user->id,
                 'code' => $orderCode,
                 'total_price' => $totalPrice,
-                'status' => 'pending', 
-                'payment_status' => 'unpaid'
+                'status' => 'pending',
+                'payment_status' => 'unpaid',
             ]);
 
             foreach ($cart->items as $item) {
+
                 OrderItem::create([
                     'order_id' => $order->id,
                     'product_id' => $item->product_id,
@@ -61,22 +73,29 @@ class OrderController extends Controller
                     'price' => $item->product->price,
                     'subtotal' => $item->quantity * $item->product->price,
                 ]);
+
                 $item->product->decrement('stock', $item->quantity);
             }
 
             $cart->items()->delete();
+
             DB::commit();
 
-            return redirect()->route('orders.show', ['order' => $order->code])
-                             ->with('success', 'Pesanan berhasil dibuat, silakan lakukan pembayaran.');
+            return redirect()
+                ->route('orders.show', ['order' => $order->code])
+                ->with('success', 'Pesanan berhasil dibuat, silakan lakukan pembayaran.');
 
         } catch (\Exception $e) {
+
             DB::rollBack();
-            return redirect()->route('cart.index')->with('error', $e->getMessage());
+
+            return redirect()
+                ->route('cart.index')
+                ->with('error', $e->getMessage());
         }
     }
 
-    // 2. Memproses Order Langsung (Bypass Keranjang)
+   
     public function directCheckout(Request $request)
     {
         $request->validate([
@@ -85,23 +104,32 @@ class OrderController extends Controller
         ]);
 
         $user = Auth::user();
+
         $product = Product::findOrFail($request->product_id);
 
         if ($product->stock < $request->quantity) {
-            return redirect()->back()->with('error', 'Stok produk tidak mencukupi.');
+            return redirect()->back()->with(
+                'error',
+                'Stok produk tidak mencukupi.'
+            );
         }
 
         DB::beginTransaction();
+
         try {
+
             $totalPrice = $product->price * $request->quantity;
-            $orderCode = 'ORD-' . date('Y') . '-' . strtoupper(Str::random(6));
-            
+
+            do {
+                $orderCode = 'ORD-' . date('YmdHis') . '-' . strtoupper(Str::random(6));
+            } while (Order::where('code', $orderCode)->exists());
+
             $order = Order::create([
                 'user_id' => $user->id,
                 'code' => $orderCode,
                 'total_price' => $totalPrice,
-                'status' => 'pending', 
-                'payment_status' => 'unpaid'
+                'status' => 'pending',
+                'payment_status' => 'unpaid',
             ]);
 
             OrderItem::create([
@@ -111,81 +139,149 @@ class OrderController extends Controller
                 'price' => $product->price,
                 'subtotal' => $totalPrice,
             ]);
-            
+
             $product->decrement('stock', $request->quantity);
+
             DB::commit();
 
-            return redirect()->route('orders.show', ['order' => $order->code])
-                             ->with('success', 'Pesanan berhasil dibuat, silakan lakukan pembayaran.');
+            return redirect()
+                ->route('orders.show', ['order' => $order->code])
+                ->with('success', 'Pesanan berhasil dibuat, silakan lakukan pembayaran.');
 
         } catch (\Exception $e) {
+
             DB::rollBack();
-            return redirect()->back()->with('error', $e->getMessage());
+
+            return redirect()
+                ->back()
+                ->with('error', $e->getMessage());
         }
     }
 
-    // 3. Menampilkan Riwayat
     public function index()
     {
-        $user = Auth::user();
-        $orders = Order::where('user_id', $user->id)->orderBy('created_at', 'desc')->get();
+        $orders = Order::where('user_id', Auth::id())
+            ->latest()
+            ->get();
+
         return view('orders.history', compact('orders'));
     }
-
-    // 4. Menampilkan Detail Order & Midtrans (DIPERBAIKI)
-    public function show(Order $order) // <- Perbaikan: Gunakan model Order langsung agar tidak crash
+    public function show(Order $order)
     {
         if ($order->user_id !== Auth::id()) {
             abort(403, 'Akses ditolak.');
         }
 
         $order->load('items.product');
+
         $snapToken = null;
 
         if ($order->payment_status === 'unpaid') {
-            $this->initMidtrans();
-            
-            $params = [
-                'transaction_details' => [
-                    'order_id' => $order->code,
-                    'gross_amount' => (int) $order->total_price,
-                ],
-                'customer_details' => [
-                    'first_name' => Auth::user()->name,
-                    'email' => Auth::user()->email,
-                ],
-            ];
 
-            $snapToken = \Midtrans\Snap::getSnapToken($params);
+            $this->initMidtrans();
+
+           
+            if (!empty($order->snap_token)) {
+
+                $snapToken = $order->snap_token;
+
+            } else {
+
+                $params = [
+                    'transaction_details' => [
+                        'order_id' => $order->code,
+                        'gross_amount' => (int) $order->total_price,
+                    ],
+                    'customer_details' => [
+                        'first_name' => Auth::user()->name,
+                        'email' => Auth::user()->email,
+                    ],
+                ];
+
+                $snapToken = \Midtrans\Snap::getSnapToken($params);
+
+                $order->update([
+                    'snap_token' => $snapToken
+                ]);
+            }
         }
 
         return view('orders.show', compact('order', 'snapToken'));
     }
 
-    // 5. Callback Webhook Midtrans
+     //Callback Midtrans
     public function callback(Request $request)
     {
         $serverKey = env('MIDTRANS_SERVER_KEY');
-        $hashed = hash("sha512", $request->order_id . $request->status_code . $request->gross_amount . $serverKey);
+
+        $hashed = hash(
+            "sha512",
+            $request->order_id .
+            $request->status_code .
+            $request->gross_amount .
+            $serverKey
+        );
 
         if ($hashed == $request->signature_key) {
-            $order = Order::where('code', $request->order_id)->first();
+
+            $order = Order::where(
+                'code',
+                $request->order_id
+            )->first();
+
             if ($order) {
-                if ($request->transaction_status == 'capture' || $request->transaction_status == 'settlement') {
-                    $order->update(['status' => 'processing', 'payment_status' => 'paid']);
+
+                if (
+                    $request->transaction_status == 'capture' ||
+                    $request->transaction_status == 'settlement'
+                ) {
+
+                    $order->update([
+                        'status' => 'paid',
+                        'payment_status' => 'paid'
+                    ]);
+
                     Payment::updateOrCreate(
-                        ['order_id' => $order->id],
-                        ['payment_method' => $request->payment_type, 'payment_status' => 'paid', 'paid_at' => now(), 'raw_response' => json_encode($request->all())]
+                        [
+                            'order_id' => $order->id
+                        ],
+                        [
+                            'payment_method' => $request->payment_type,
+                            'payment_status' => 'paid',
+                            'paid_at' => now(),
+                            'raw_response' => json_encode($request->all())
+                        ]
                     );
-                } elseif (in_array($request->transaction_status, ['cancel', 'deny', 'expire'])) {
-                    $order->update(['status' => 'cancelled', 'payment_status' => 'failed']);
+
+                } elseif (
+                    in_array(
+                        $request->transaction_status,
+                        ['cancel', 'deny', 'expire']
+                    )
+                ) {
+
+                    $order->update([
+                        'status' => 'cancelled',
+                        'payment_status' => 'failed',
+                        'snap_token' => null
+                    ]);
+
                     Payment::updateOrCreate(
-                        ['order_id' => $order->id],
-                        ['payment_method' => $request->payment_type, 'payment_status' => 'failed', 'raw_response' => json_encode($request->all())]
+                        [
+                            'order_id' => $order->id
+                        ],
+                        [
+                            'payment_method' => $request->payment_type,
+                            'payment_status' => 'failed',
+                            'raw_response' => json_encode($request->all())
+                        ]
                     );
                 }
             }
         }
-        return response()->json(['message' => 'Sukses']);
+
+        return response()->json([
+            'message' => 'Sukses'
+        ]);
     }
 }
