@@ -121,27 +121,27 @@
 
     <section class="container mx-auto px-6 py-20 flex flex-col md:flex-row items-center gap-16">
         <div class="w-full md:w-1/2">
-            <img src="https://images.unsplash.com/photo-1520691512911-205488137521?q=80&w=600" class="rounded-sm shadow-xl w-full h-[450px] object-cover">
+            <img src="{{ asset('storage/products/kursikantor.jpg') }}" class="rounded-sm shadow-xl w-full h-[450px] object-cover">
         </div>
         <div class="w-full md:w-1/2 space-y-6">
             <p class="text-teal-ui font-extrabold text-xs tracking-wider">Low Price, Exclusive Product</p>
             <h2 class="text-4xl font-extrabold text-dark-ui leading-tight">Exclusive Souvenir<br>ABBA Barokah</h2>
             <p class="text-gray-500 text-sm leading-relaxed italic">
-                Quando ambulabat agendis admonere te qualis actio. Si ad corpus, quae plerumque imaginare tecum in balineo quidam aquam fundes aliquod discrimen vituperiis usum alii furantur.
+            Kursi kantor ergonomis dengan desain modern yang dirancang khusus untuk menjaga kenyamanan posisi duduk Anda selama jam kerja. Menggunakan bahan berkualitas tinggi dan sandaran jaring (mesh) yang sejuk untuk mendukung produktivitas kerja maksimal.
             </p>
             <div class="flex gap-10">
                 <div class="flex items-start gap-3">
                     <div class="bg-teal-ui p-1 rounded text-white italic text-[10px] font-bold">HQ</div>
                     <div>
                         <p class="font-extrabold text-dark-ui text-sm">High Quality</p>
-                        <p class="text-[10px] text-gray-400 mt-1">Quando ambulabat agendis<br>admonere te qualis actio.</p>
+                        <p class="text-[10px] text-gray-400 mt-1">Menggunakan bahan mesh premium, busa dudukan empuk anti-kempes, serta rangka kaki kokoh yang mampu menahan beban berat.</p>
                     </div>
                 </div>
                 <div class="flex items-start gap-3">
                     <div class="text-teal-ui text-xl">★</div>
                     <div>
                         <p class="font-extrabold text-dark-ui text-sm">Favorite Product</p>
-                        <p class="text-[10px] text-gray-400 mt-1">Quando ambulabat agendis<br>admonere te qualis actio.</p>
+                        <p class="text-[10px] text-gray-400 mt-1">Telah menjadi pilihan utama dan produk paling dicari oleh berbagai perusahaan serta ruang kerja minimalis karena kenyamanannya.</p>
                     </div>
                 </div>
             </div>
@@ -164,7 +164,7 @@
             <p class="text-teal-ui font-bold text-xs mb-4">Why choose ABBA Barokah?</p>
             <h2 class="text-4xl font-extrabold text-dark-ui mb-6">Solusi terbaik untuk proyek Anda!<br>menyediakan berbagai produk berkualitas<br>dengan pelayanan terpercaya</h2>
             <p class="text-gray-500 text-xs max-w-3xl mx-auto mb-12 leading-relaxed italic">
-                Sollicitant homines non sunt nisi quam formae rerum principiis opiniones.<br>Mors enim est terribilis ut Socrati aliud esse apparet. Sed timor mortis est
+            Lebih dari sekadar penyedia produk, kami adalah rekan kerja yang siap mendengarkan kebutuhan Anda. Hubungi kami hari ini dan temukan penawaran terbaik khusus untuk proyek Anda.
             </p>
         </div>
     </section>
