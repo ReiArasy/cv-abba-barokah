@@ -116,43 +116,5 @@
         </main>
     </div>
 
-    <footer class="w-full bg-[#d1d5db] pt-16 pb-8 text-slate-800 border-t border-gray-300/30">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 md:gap-12">
-            <div class="sm:col-span-2 lg:col-span-2">
-                <div class="bg-white/60 p-3 w-16 h-14 rounded mb-6 flex items-center justify-center border border-gray-300/50">
-                    <div class="w-6 h-5 bg-gray-400 rounded-sm"></div>
-                </div>
-                <h3 class="font-extrabold text-dark-ui leading-tight mb-4 uppercase text-sm md:text-base tracking-tight">
-                    Membangun kualitas dan<br class="hidden sm:block">menyediakan kepercayaan
-                </h3>
-                <div class="text-xs text-dark-ui/80 space-y-2.5 leading-relaxed">
-                    <p class="italic">Jl. MH Thamrin 3/10, Desa<br>Tlogobendung, Gresik, Jawa Timur</p>
-                    <p class="font-bold text-sm text-dark-ui">+62 882-1712-6768</p>
-                    <p class="font-medium">ABBABAROKAH@gmail.com</p>
-                </div>
-            </div>
-
-            <div class="flex flex-col space-y-3 pt-2">
-                <p class="font-extrabold text-dark-ui text-xs uppercase tracking-wider mb-2">Navigation</p>
-                <a href="{{ route('home') }}" class="text-xs font-bold hover:text-teal-ui transition duration-200">Home</a>
-                <a href="#" class="text-xs font-bold hover:text-teal-ui transition duration-200">About us</a>
-                <a href="#" class="text-xs font-bold hover:text-teal-ui transition duration-200">Purchase</a>
-                <a href="#" class="text-xs font-bold hover:text-teal-ui transition duration-200">Contact</a>
-            </div>
-
-            <div class="pt-2">
-                <p class="font-extrabold text-dark-ui text-xs uppercase tracking-wider mb-4">Product</p>
-                <ul class="text-xs text-gray-700 space-y-3 font-medium italic">
-                    <li class="hover:text-dark-ui transition">Peralatan Kantor</li>
-                    <li class="hover:text-dark-ui transition">Souvenir</li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 border-t border-gray-400/30 pt-6 text-center">
-            <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">&copy; 2026 CV ABBA BAROKAH. All Rights Reserved.</p>
-        </div>
-    </footer>
-
 </div>
 @endsection

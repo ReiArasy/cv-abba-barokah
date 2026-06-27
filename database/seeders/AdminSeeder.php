@@ -14,7 +14,7 @@ class AdminSeeder extends Seeder
     public function run(): void
     {
         User::updateOrCreate(
-            ['email' => 'admin@gmail.com'], // Jika dijalankan ulang, tidak akan duplikat
+            ['email' => 'abba@gmail.com'], // Jika dijalankan ulang, tidak akan duplikat
             [
                 'name' => 'Super Admin',
                 'username' => 'admin',
@@ -23,7 +23,7 @@ class AdminSeeder extends Seeder
                 'provinsi' => 'Jawa Timur',
                 'kota' => 'Surabaya',
                 'role' => 'admin', // <-- Mengunci role sebagai admin
-                'password' => bcrypt('admin123'), // <-- Password login admin Anda
+                'password' => bcrypt('abba123'), // <-- Password login admin Anda
             ]
         );
     }

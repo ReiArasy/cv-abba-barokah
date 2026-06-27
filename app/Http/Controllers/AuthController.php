@@ -49,8 +49,8 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $messages = [
-            'required' => ':attribute wajib diisi lengkap.',
-            'unique'   => ':attribute sudah terdaftar, gunakan yang lain.',
+            'required' => 'semua field wajib diisi lengkap!',
+            'unique'   => 'email sudah terdaftar, gunakan yang lain!',
             'email'    => 'Format email tidak valid.',
             'min'      => ':attribute minimal :min karakter.',
         ];

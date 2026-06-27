@@ -180,7 +180,9 @@
         </h3>
         <div class="text-xs text-dark-ui/80 space-y-3 leading-relaxed">
             <p class="italic">Jl. MH Thamrin 3/10, Desa<br>Tlogobendung, Gresik, Jawa Timur</p>
-            <p class="font-bold text-sm">+62 882-1712-6768</p>
+            <a href="https://wa.me/6288217126768" target="_blank" rel="noopener noreferrer" class="font-bold text-sm text-black hover:underline no-underline">
+                +62 882-1712-6768
+            </a>
             <p class="font-medium">ABBABAROKAH@gmail.com</p>
         </div>
     </div>
@@ -204,8 +206,8 @@
         @endauth
         
         <a href="{{ route('home') }}#main-footer" class="font-extrabold text-dark-ui text-sm hover:text-teal-500 transition">Contact</a>
-    </div>
-</div>
+        </div>
+        </div>
         <div class="container mx-auto px-12 mt-20 border-t border-gray-400/30 pt-8 text-center">
             <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">&copy; 2026 CV ABBA BAROKAH. All Rights Reserved.</p>
         </div>

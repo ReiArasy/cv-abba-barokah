@@ -433,58 +433,5 @@
         </a>
 
     </section>
-
-
-    <!-- FOOTER -->
-    <footer id="contact">
-
-        <div class="footer-grid">
-
-            <div>
-
-                <h3>CV ABBA BAROKAH</h3>
-
-                <p>
-                    Membangun kualitas dan menyediakan
-                    kepercayaan
-                </p>
-
-                <p>
-                    Gresik, Jawa Timur
-                </p>
-
-                <p>
-                    +62 812-0000-0000
-                </p>
-
-                <p>
-                    abbabarokah@gmail.com
-                </p>
-
-            </div>
-
-            <div>
-
-                <h3>Menu</h3>
-
-                <a href="#">Home</a>
-                <a href="#products">Product</a>
-                <a href="#about">About</a>
-
-            </div>
-
-            <div>
-
-                <h3>Kategori</h3>
-
-                <p>Peralatan Kantor</p>
-                <p>Souvenir</p>
-
-            </div>
-
-        </div>
-
-    </footer>
-
 </body>
 </html>

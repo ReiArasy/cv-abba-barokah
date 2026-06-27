@@ -391,46 +391,6 @@
 
 </div>
 
-{{-- Footer Instansi --}}
-<footer>
-    <div class="container">
-        <div class="row">
-
-            <div class="col-lg-4 mb-4">
-                <div class="bg-white rounded p-3 d-inline-block mb-3">
-                    <i class="fa-regular fa-image"></i>
-                </div>
-
-                <h5 class="footer-title">
-                    MEMBANGUN KUALITAS DAN MENYEDIAKAN KEPERCAYAAN
-                </h5>
-
-                <p class="mt-3">
-                    Jl MH Thamrin 3/10, Desa Tlogobendung, Gresik, Jawa Timur
-                </p>
-
-                <p>+62 882-1712-6768</p>
-
-                <p>ABBABAROKAH@gmail.com</p>
-            </div>
-
-            <div class="col-lg-4 footer-menu ps-lg-5">
-                <a href="{{ url('/') }}">Home</a>
-                <a href="#">About us</a>
-                <a href="#">Purchase</a>
-                <a href="#">Contact</a>
-            </div>
-
-            <div class="col-lg-4 footer-menu">
-                <a href="{{ route('products.index') }}">Product</a>
-                <a href="#">Peralatan Kantor</a>
-                <a href="#">Souvenir</a>
-            </div>
-
-        </div>
-    </div>
-</footer>
-
 {{-- KUMPULAN JAVASCRIPT --}}
 <script>
     // FUNGSI PERINGATAN LOGIN
