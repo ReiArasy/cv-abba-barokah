@@ -53,6 +53,7 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     // -- ROUTES ORDER & MIDTRANS --
     Route::post('/orders/checkout', [OrderController::class, 'checkout'])->name('checkout');
     Route::post('/orders/direct', [OrderController::class, 'directCheckout'])->name('orders.direct');
+    Route::post('/orders/{order:code}/check-payment',[OrderController::class,'checkPayment'])->name('orders.check-payment');
     Route::get('/orders/history', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order:code}', [OrderController::class, 'show'])->name('orders.show');
 

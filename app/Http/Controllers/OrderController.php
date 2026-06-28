@@ -294,4 +294,50 @@ class OrderController extends Controller
              'message' => 'Sukses'
          ]);
      }
+
+     public function checkPayment(Order $order)
+{
+    $this->initMidtrans();
+
+    try {
+
+        $status = \Midtrans\Transaction::status($order->code);
+
+        if (
+            $status->transaction_status == 'settlement' ||
+            $status->transaction_status == 'capture'
+        ) {
+
+            $order->update([
+                'status' => 'paid',
+                'payment_status' => 'paid'
+            ]);
+
+            Payment::updateOrCreate(
+                [
+                    'order_id' => $order->id
+                ],
+                [
+                    'payment_method' => $status->payment_type,
+                    'payment_reference' => $status->transaction_id,
+                    'payment_status' => 'paid',
+                    'paid_at' => now(),
+                    'raw_response' => json_encode($status)
+                ]
+            );
+        }
+
+        return response()->json([
+            'success' => true,
+            'status' => $order->payment_status
+        ]);
+
+    } catch (\Exception $e) {
+
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage()
+        ],500);
+    }
+}
 }
