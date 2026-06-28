@@ -348,11 +348,7 @@
 </div>
 
 <script>
-    /**
-     * Tombol + / - kuantitas
-     * Saat melebihi stok → tampilkan SweetAlert error, angka TIDAK berubah.
-     * Saat valid       → submit form ke server.
-     */
+    
     function changeQtyValue(button, direction) {
         const form          = button.closest('form');
         const hiddenInput   = form.querySelector('.qty-hidden-input');
@@ -360,15 +356,12 @@
         const minusBtn      = form.querySelector('.btn-qty-minus');
         const plusBtn       = form.querySelector('.btn-qty-plus');
 
-        const stock       = parseInt(plusBtn.getAttribute('data-stock'))       || 1;
-        const productName = plusBtn.getAttribute('data-product-name')          || 'produk ini';
-        let   currentVal  = parseInt(hiddenInput.value)                        || 1;
+        const stock       = parseInt(plusBtn.getAttribute('data-stock'))  1;
+        const productName = plusBtn.getAttribute('data-product-name') 'produk ini';
+        let   currentVal  = parseInt(hiddenInput.value)1;
         const newVal      = currentVal + direction;
 
-        // ── Batas bawah (min 1) ──────────────────────────────────────────────
         if (newVal < 1) return;
-
-        // ── Melebihi stok → SweetAlert error, batalkan perubahan ────────────
         if (newVal > stock) {
             Swal.fire({
                 icon: 'error',
@@ -381,10 +374,9 @@
                 customClass: { confirmButton: 'swal2-confirm-stock-error' },
                 buttonsStyling: false,
             });
-            return; // angka di layar tetap, form TIDAK di-submit
+            return; 
         }
 
-        // ── Valid → update tampilan & submit ─────────────────────────────────
         hiddenInput.value   = newVal;
         displaySpan.innerText = newVal;
 
@@ -395,8 +387,6 @@
 
         form.submit();
     }
-
-    // ── Konfirmasi hapus produk ───────────────────────────────────────────────
     function confirmDelete(button, productName) {
         Swal.fire({
             title: 'Hapus Produk?',
@@ -416,7 +406,6 @@
         });
     }
 
-    // ── Konfirmasi checkout ───────────────────────────────────────────────────
     function confirmCheckout(button) {
         if (button.disabled) return;
 

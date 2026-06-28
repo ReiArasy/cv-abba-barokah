@@ -77,8 +77,6 @@ class CartController extends Controller
                 ]);
             }
 
-            // TIDAK ada decrement stok di sini — stok dikurangi saat checkout
-
             DB::commit();
             return redirect()->route('cart.index')->with('success', 'Produk berhasil dimasukkan ke keranjang belanja.');
 
@@ -120,9 +118,6 @@ class CartController extends Controller
             CartItem::where('cart_id', $cart->id)
                     ->where('product_id', $productId)
                     ->update(['quantity' => $newQuantity]);
-
-            // TIDAK ada increment/decrement stok di sini — stok dikurangi saat checkout
-
             DB::commit();
             return redirect()->back()->with('success', 'Jumlah belanjaan berhasil diperbarui.');
 
@@ -140,7 +135,6 @@ class CartController extends Controller
             abort(403, 'Aksi tidak diizinkan.');
         }
 
-        // Pastikan item ini memang milik cart user yang login
         $cartItem = CartItem::where('cart_id', $cart->id)
                             ->where('product_id', $productId)
                             ->firstOrFail();
@@ -150,8 +144,6 @@ class CartController extends Controller
             CartItem::where('cart_id', $cart->id)
                     ->where('product_id', $productId)
                     ->delete();
-
-            // TIDAK ada increment stok di sini — stok belum pernah dikurangi
 
             DB::commit();
             return redirect()->back()->with('success', 'Produk berhasil dikeluarkan dari keranjang.');

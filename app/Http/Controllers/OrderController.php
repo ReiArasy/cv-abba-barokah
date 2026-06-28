@@ -223,22 +223,13 @@ class OrderController extends Controller
          );
      
          if ($hashed == $request->signature_key) {
-     
-             // --- PERBAIKAN DI SINI ---
-             // Pisahkan string berdasarkan tanda '-'
-             // Jika formatnya 'ORD-1-171829384', maka:
-             // $parts[0] = 'ORD', $parts[1] = '1', $parts[2] = '171829384'
              $parts = explode('-', $request->order_id);
-             
-             // Gabungkan kembali bagian code aslinya ('ORD-1')
              $originalCode = $parts[0] . '-' . $parts[1];
      
              $order = Order::where(
                  'code',
-                 $originalCode // Cari menggunakan code asli yang sudah dibersihkan
+                 $originalCode 
              )->first();
-             // -------------------------
-     
              if ($order) {
      
                  if (
