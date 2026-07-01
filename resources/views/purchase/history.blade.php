@@ -13,9 +13,9 @@
     </div>
 
     <div class="flex space-x-6 border-b border-gray-200 mb-6">
-        <button onclick="filterOrders('all')" id="tab-all" class="text-teal-500 font-semibold border-b-2 border-teal-500 pb-2 px-1 transition text-sm">All</button>
-        <button onclick="filterOrders('success')" id="tab-success" class="text-gray-500 hover:text-teal-500 font-medium pb-2 px-1 transition text-sm">Success</button>
-        <button onclick="filterOrders('pending')" id="tab-pending" class="text-gray-500 hover:text-teal-500 font-medium pb-2 px-1 transition text-sm">Pending</button>
+        <button onclick="filterOrders('all')" id="tab-all" class="text-teal-500 font-semibold border-b-2 border-teal-500 pb-2 px-1 transition text-sm">Semua</button>
+        <button onclick="filterOrders('success')" id="tab-success" class="text-gray-500 hover:text-teal-500 font-medium pb-2 px-1 transition text-sm">Sukses</button>
+        <button onclick="filterOrders('pending')" id="tab-pending" class="text-gray-500 hover:text-teal-500 font-medium pb-2 px-1 transition text-sm">Menunggu</button>
     </div>
 
     <div id="order-container">

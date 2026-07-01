@@ -106,12 +106,12 @@ class CartController extends Controller
                 'Jumlah minimal adalah 1. Gunakan tombol hapus jika ingin mengeluarkan produk.'
             );
         }
-        if ($newQuantity > $product->stock) {
-            return redirect()->back()->with(
-                'error',
-                "Jumlah melebihi stok yang tersedia. Stok tersedia: {$product->stock}."
-            );
-        }
+       if ($newQuantity > $product->stock) {
+    return redirect()->back()->with(
+        'error',
+        'Stok tidak mencukupi untuk penambahan.'
+    );
+}
 
         DB::beginTransaction();
         try {

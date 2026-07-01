@@ -20,7 +20,7 @@
             
             <div class="text-center mb-8 md:mb-12">
                 <p class="uppercase tracking-[0.2em] text-[11px] font-bold text-teal-ui mb-2">CV ABBA BAROKAH</p>
-                <h1 class="text-3xl md:text-4xl font-extrabold text-dark-ui tracking-tight">Product Overview</h1>
+                <h1 class="text-3xl md:text-4xl font-extrabold text-dark-ui tracking-tight">Ringkasan Produk</h1>
             </div>
 
             <form action="{{ route('products.index') }}" method="GET" class="max-w-3xl mx-auto flex flex-col md:flex-row gap-4 justify-center items-end mb-12 md:mb-16 bg-gray-50/50 p-4 md:p-0 rounded-lg md:bg-transparent">
@@ -51,11 +51,11 @@
 
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 border-b border-gray-100 pb-4">
                 <div>
-                    <h2 class="text-2xl font-extrabold text-dark-ui">Products</h2>
+                    <h2 class="text-2xl font-extrabold text-dark-ui">Produk</h2>
                     <div class="h-1 w-12 bg-teal-ui mt-1.5"></div>
                 </div>
                 <a href="{{ route('products.index') }}" class="px-5 py-2 border border-teal-ui text-teal-ui rounded font-bold text-xs hover:bg-teal-ui hover:text-white transition duration-200 shadow-sm">
-                    View All
+                    Lihat Semua
                 </a>
             </div>
 
@@ -109,7 +109,7 @@
             <div class="relative flex py-5 items-center mb-6">
                 <div class="flex-grow border-t border-gray-200"></div>
                 <button class="flex-shrink mx-4 bg-white border border-teal-ui text-teal-ui px-6 py-2.5 rounded-full font-bold text-xs hover:bg-teal-ui hover:text-white transition duration-200 shadow-sm">
-                    Load more products
+                   Muat Lebih Banyak Produk
                 </button>
                 <div class="flex-grow border-t border-gray-200"></div>
             </div>

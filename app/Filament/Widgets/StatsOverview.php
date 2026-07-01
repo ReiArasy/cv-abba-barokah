@@ -13,15 +13,15 @@ class StatsOverview extends BaseWidget
     protected function getStats(): array
     {
         return [
-            Stat::make('Products', Product::count())
+            Stat::make('Produk', Product::count())
                 ->description('Total Produk')
                 ->icon('heroicon-o-cube'),
 
-            Stat::make('Customers', User::count())
+            Stat::make('Customer', User::count())
                 ->description('Total Customer')
                 ->icon('heroicon-o-users'),
 
-            Stat::make('Transactions', Order::count())
+            Stat::make('Transaksi', Order::count())
                 ->description('Total Transaksi')
                 ->icon('heroicon-o-banknotes'),
         ];

@@ -11,6 +11,7 @@
         font-family: 'Inter', sans-serif;
     }
     .cart-container {
+        width: 100%;
         max-width: 960px;
         margin: 40px auto;
         background: #ffffff;
@@ -73,7 +74,7 @@
         color: #14b8a6;
     }
     .btn-qty-minus, .btn-qty-plus {
-        background-color: #6366f1;
+        background-color: #16a34a; /* Mengubah ke hijau */
         color: #ffffff;
         border: none;
         width: 28px;
@@ -85,7 +86,7 @@
         font-size: 0.75rem;
     }
     .btn-qty-minus:disabled, .btn-qty-plus:disabled {
-        background-color: #c7d2fe;
+        background-color: #bbf7d0; /* Hijau muda saat disabled */
         cursor: not-allowed;
     }
     .qty-display-number {
@@ -123,7 +124,7 @@
         margin-bottom: 2px;
     }
     .btn-checkout-submit {
-        background-color: #6366f1;
+        background-color: #16a34a; /* Mengubah ke hijau */
         color: #ffffff;
         border: none;
         padding: 10px 36px;
@@ -134,16 +135,16 @@
         transition: background-color 0.2s;
     }
     .btn-checkout-submit:hover {
-        background-color: #4f46e5;
+        background-color: #15803d; /* Hover hijau lebih tua */
     }
 
     .swal2-confirm-custom      { background-color: #ef4444 !important; color: white !important; border-radius: 6px !important; padding: 10px 24px !important; font-weight: 600 !important; }
     .swal2-cancel-custom       { background-color: #f1f5f9 !important; color: #475569 !important; border-radius: 6px !important; padding: 10px 24px !important; font-weight: 600 !important; margin-right: 10px !important; }
-    .swal2-confirm-checkout    { background-color: #6366f1 !important; color: white !important; border-radius: 6px !important; padding: 10px 24px !important; font-weight: 600 !important; }
-    .swal2-confirm-stock-error { background-color: #6366f1 !important; color: white !important; border-radius: 6px !important; padding: 10px 24px !important; font-weight: 600 !important; }
+    .swal2-confirm-checkout    { background-color: #16a34a !important; color: white !important; border-radius: 6px !important; padding: 10px 24px !important; font-weight: 600 !important; }
+    .swal2-confirm-stock-error { background-color: #16a34a !important; color: white !important; border-radius: 6px !important; padding: 10px 24px !important; font-weight: 600 !important; }
 </style>
 
-<div class="container">
+<div class="container d-flex justify-content-center"> {{-- Ditambahkan d-flex & justify-content-center agar ke tengah pas --}}
     <div class="cart-container shadow-sm border border-light">
 
         {{-- Header --}}
@@ -243,10 +244,6 @@
                             @csrf
                             @method('PATCH')
 
-                            {{--
-                                data-stock  = stok asli dari DB (tidak pernah disentuh cart)
-                                data-in-cart = qty item ini yang sudah ada di keranjang
-                            --}}
                             <button type="button"
                                     class="btn-qty-minus"
                                     onclick="changeQtyValue(this, -1)"
@@ -348,7 +345,6 @@
 </div>
 
 <script>
-    
     function changeQtyValue(button, direction) {
         const form          = button.closest('form');
         const hiddenInput   = form.querySelector('.qty-hidden-input');
@@ -356,12 +352,13 @@
         const minusBtn      = form.querySelector('.btn-qty-minus');
         const plusBtn       = form.querySelector('.btn-qty-plus');
 
-        const stock       = parseInt(plusBtn.getAttribute('data-stock'))  1;
-        const productName = plusBtn.getAttribute('data-product-name') 'produk ini';
-        let   currentVal  = parseInt(hiddenInput.value)1;
+        const stock       = parseInt(plusBtn.getAttribute('data-stock'))       || 1;
+        const productName = plusBtn.getAttribute('data-product-name')          || 'produk ini';
+        let   currentVal  = parseInt(hiddenInput.value)                        || 1;
         const newVal      = currentVal + direction;
 
         if (newVal < 1) return;
+
         if (newVal > stock) {
             Swal.fire({
                 icon: 'error',
@@ -374,19 +371,18 @@
                 customClass: { confirmButton: 'swal2-confirm-stock-error' },
                 buttonsStyling: false,
             });
-            return; 
+            return;
         }
 
         hiddenInput.value   = newVal;
         displaySpan.innerText = newVal;
 
-        // Disable tombol minus jika sudah di angka 1
         minusBtn.disabled = (newVal <= 1);
-        // Disable tombol plus jika sudah menyentuh stok maksimal
         plusBtn.disabled  = (newVal >= stock);
 
         form.submit();
     }
+
     function confirmDelete(button, productName) {
         Swal.fire({
             title: 'Hapus Produk?',

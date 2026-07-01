@@ -14,12 +14,12 @@
             
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2">Email Terdaftar</label>
-                <input type="email" name="email" value="{{ old('email') }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm" placeholder="Masukkan email akun Anda" required>
+                <input type="email" name="email" value="{{ old('email') }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm" placeholder="Masukkan email akun Anda yang Terdaftar" required>
             </div>
 
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2">Password Baru</label>
-                <input type="password" name="password" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm" placeholder="Minimal 8 karakter" required>
+                <input type="password" name="password" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm" placeholder="Password Minimal 8 karakter" required>
             </div>
 
             <div class="mb-6">
@@ -34,7 +34,7 @@
 
         <div class="mt-6 text-center">
             <a href="{{ route('login') }}" class="text-sm text-blue-500 hover:underline font-semibold">
-                Kembali ke Sign In
+                Kembali ke Login
             </a>
         </div>
     </div>

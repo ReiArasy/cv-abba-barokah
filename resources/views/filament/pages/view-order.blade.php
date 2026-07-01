@@ -15,12 +15,12 @@
         <x-filament::card>
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <p class="text-sm text-gray-500">Order Status</p>
+                    <p class="text-sm text-gray-500">Status Pesanan</p>
                     <p class="font-semibold">{{ ucfirst($record->status) }}</p>
                 </div>
 
                 <div>
-                    <p class="text-sm text-gray-500">Payment Status</p>
+                    <p class="text-sm text-gray-500">Status Pembayaran</p>
                     <p class="font-semibold">{{ ucfirst($record->payment_status) }}</p>
                 </div>
             </div>
@@ -28,16 +28,16 @@
 
         <!-- CUSTOMER -->
         <x-filament::card>
-            <h3 class="font-bold mb-3">Customer Info</h3>
+            <h3 class="font-bold mb-3">Informasi Customer</h3>
 
-            <p>Name: {{ $record->user->name }}</p>
-            <p>Email: {{ $record->user->email }}</p>
-            <p>Phone: {{ $record->user->phone }}</p>
+            <p>Nama: {{ $record->user->name }}</p>
+            <p>Alamat Email: {{ $record->user->email }}</p>
+            <p>Nomor Telepon: {{ $record->user->phone }}</p>
         </x-filament::card>
 
         <!-- ORDER ITEMS -->
         <x-filament::card>
-            <h3 class="font-bold mb-4">Order Items</h3>
+            <h3 class="font-bold mb-4">Item Pesanan</h3>
 
             <div class="space-y-3">
                 @foreach($record->items as $item)
@@ -70,11 +70,11 @@
         <!-- PAYMENT -->
         @if($record->payment)
         <x-filament::card>
-            <h3 class="font-bold mb-3">Payment Info</h3>
+            <h3 class="font-bold mb-3">Informasi Pembayaran</h3>
 
-            <p>Method: {{ $record->payment->payment_method }}</p>
-            <p>Reference: {{ $record->payment->payment_reference }}</p>
-            <p>Paid At: {{ $record->payment->paid_at }}</p>
+            <p>Metode Pembayaran: {{ $record->payment->payment_method }}</p>
+            <p>Referensi: {{ $record->payment->payment_reference }}</p>
+            <p>Dibayar Pada: {{ $record->payment->paid_at }}</p>
         </x-filament::card>
         @endif
 

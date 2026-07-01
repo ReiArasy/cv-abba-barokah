@@ -60,6 +60,7 @@
             justify-content:center;
             position:relative;
             overflow:hidden;
+            padding: 0 !important; /* Diubah menjadi 0 agar gambar slider penuh mendominasi box */
         }
 
         .product-image img{
@@ -78,6 +79,7 @@
             border-radius:50%;
             background:white;
             box-shadow:0 2px 10px rgba(0,0,0,0.15);
+            z-index: 10; /* Menjamin tombol navigasi selalu berada di atas gambar */
         }
 
         .slider-btn.left{
@@ -233,7 +235,7 @@
                 <i class="fa-solid fa-arrow-left"></i> Kembali
             </a>
 
-            <h2 class="fw-bold m-0">Details</h2>
+            <h2 class="fw-bold m-0">Detail Produk</h2>
 
             <div></div>
         </div>
@@ -262,35 +264,56 @@
             </span>
         </div>
 
-        {{-- Product Image Dinamis --}}
+        {{-- Product Image Dinamis (Revisi Mendukung Slide & Fit Ukuran Gambar) --}}
         <div class="product-image mb-5">
             @php
-                $displayImage = null;
-                if (is_array($product->image) && count($product->image) > 0) {
-                    if (!empty($product->image[0]) && trim($product->image[0]) !== '') {
-                        $displayImage = $product->image[0];
-                    }
-                } elseif (is_string($product->image) && !empty($product->image) && trim($product->image) !== '') {
-                    $displayImage = $product->image;
+                $images = [];
+                if (is_array($product->image)) {
+                    $images = $product->image;
+                } elseif (is_string($product->image) && !empty($product->image)) {
+                    $decoded = json_decode($product->image, true);
+                    $images = is_array($decoded) ? $decoded : explode(',', $product->image);
                 }
+                $images = array_filter(array_map('trim', $images));
             @endphp
 
-            @if($displayImage)
-                <img src="{{ asset('storage/' . $displayImage) }}" alt="{{ $product->name }}">
+            @if(count($images) > 0)
+                {{-- Bootstrap Carousel Container --}}
+                <div id="productImageCarousel" class="carousel slide w-100 h-100" data-bs-ride="false" style="background: #e9edf2;">
+                    
+                    {{-- Item Gambar --}}
+                    <div class="carousel-inner h-100">
+                        @foreach($images as $index => $img)
+                            <div class="carousel-item h-100 {{ $index === 0 ? 'active' : '' }}">
+                                {{-- 
+                                  Menggunakan object-fit: contain agar gambar pas, utuh, 
+                                  tidak terpotong, dan tidak gepeng meski scale dari admin berbeda.
+                                --}}
+                                <img src="{{ asset('storage/' . $img) }}" 
+                                     class="d-block w-100 h-100" 
+                                     style="object-fit: contain; background: #e9edf2;" 
+                                     alt="{{ $product->name }}">
+                            </div>
+                        @endforeach
+                    </div>
+
+                    {{-- Navigasi Panah Slider --}}
+                    @if(count($images) > 1)
+                        <button class="slider-btn left" type="button" data-bs-target="#productImageCarousel" data-bs-slide="prev">
+                            <i class="fa-solid fa-chevron-left" style="color: #333;"></i>
+                        </button>
+
+                        <button class="slider-btn right" type="button" data-bs-target="#productImageCarousel" data-bs-slide="next">
+                            <i class="fa-solid fa-chevron-right" style="color: #333;"></i>
+                        </button>
+                    @endif
+                </div>
             @else
                 <div class="text-center">
                     <i class="fa-regular fa-image text-muted" style="font-size: 5rem;"></i>
                     <p class="text-secondary small mt-2 mb-0">Gambar produk belum tersedia</p>
                 </div>
             @endif
-
-            <button class="slider-btn left">
-                <i class="fa-solid fa-chevron-left"></i>
-            </button>
-
-            <button class="slider-btn right">
-                <i class="fa-solid fa-chevron-right"></i>
-            </button>
         </div>
 
         {{-- Form Manajemen Order / Keranjang --}}
@@ -370,7 +393,7 @@
                                 
                                 {{-- Tombol Order Langsung --}}
                                 <button type="submit" id="btn-direct-order" formaction="{{ route('orders.direct') }}" class="btn-cart flex-grow-1 text-center">
-                                    Order Sekarang
+                                    Pesan Sekarang
                                 </button>
 
                             @else

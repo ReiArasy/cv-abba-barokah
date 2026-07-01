@@ -7,36 +7,36 @@
 
         <div class="flex space-x-8 text-sm font-bold items-center">
             <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'text-teal-500 border-b-2 border-teal-500 pb-1' : 'text-slate-600 hover:text-teal-500 transition' }}">
-                Home
+                Dashboard
             </a>
             
             <a href="{{ route('about.index') }}" class="{{ request()->routeIs('about.index') ? 'text-teal-500 border-b-2 border-teal-500 pb-1' : 'text-slate-600 hover:text-teal-500 transition' }}">
-            About us
+            Tentang Kami
             </a>
             
             @guest
-                <a href="javascript:void(0)" onclick="peringatanLogin()" class="text-slate-600 hover:text-teal-500 transition">Product</a>
-                <a href="javascript:void(0)" onclick="peringatanLogin()" class="text-slate-600 hover:text-teal-500 transition">Purchase</a>
+                <a href="javascript:void(0)" onclick="peringatanLogin()" class="text-slate-600 hover:text-teal-500 transition">Produk</a>
+                <a href="javascript:void(0)" onclick="peringatanLogin()" class="text-slate-600 hover:text-teal-500 transition">Pembelian</a>
             @endguest
 
             @auth
                 <a href="{{ route('products.index') }}" class="{{ request()->routeIs('products.index') ? 'text-teal-500 border-b-2 border-teal-500 pb-1' : 'text-slate-600 hover:text-teal-500 transition' }}">
-                    Product
+                    Produk
                 </a>
-                <a href="{{ route('purchase.history') }}" class="text-slate-600 hover:text-teal-500 transition">Purchase</a>
+                <a href="{{ route('purchase.history') }}" class="text-slate-600 hover:text-teal-500 transition">Pembelian</a>
             @endauth
             
-            <a href="{{ route('home') }}#main-footer" class="text-slate-600 hover:text-teal-500 transition">Contact</a>
+            <a href="{{ route('home') }}#main-footer" class="text-slate-600 hover:text-teal-500 transition">Kontak</a>
 
             <div class="h-5 w-[1px] bg-gray-200 hidden sm:block"></div>
             
             <div class="flex items-center space-x-4">
                 @guest
                     <a href="{{ route('login') }}" class="text-slate-600 hover:text-teal-500 transition">
-                        Sign In
+                        Login
                     </a>
                     <a href="{{ route('register') }}" class="bg-[#14b8a6] text-white px-4 py-2 rounded-sm text-xs font-bold hover:bg-[#0d9488] transition shadow-sm">
-                        Sign Up
+                        Registrasi
                     </a>
                 @endguest
 

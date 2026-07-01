@@ -56,7 +56,7 @@
                     type="text" 
                     name="search"
                     value="{{ request('search') }}"
-                    placeholder="Search product..." 
+                    placeholder="Cari Produk" 
                     class="w-full pl-11 pr-4 py-3.5 rounded-sm text-gray-800 focus:outline-none shadow-xl text-sm"
                  >  
             </form>
@@ -68,11 +68,11 @@
     <section class="container mx-auto px-6 py-20">
         <div class="flex justify-between items-center mb-12">
             <div>
-                <h2 class="text-3xl font-extrabold text-dark-ui">Products</h2>
+                <h2 class="text-3xl font-extrabold text-dark-ui">Semua Produk</h2>
                 <div class="h-1.5 w-12 bg-teal-ui mt-2"></div>
             </div>
             <a href="{{ route('products.index') }}" class="px-6 py-2 border border-teal-ui text-teal-ui rounded font-bold text-xs hover:bg-teal-ui hover:text-white transition inline-block">
-                View All
+                Lihat Semua
             </a>
         </div>
 
@@ -124,8 +124,8 @@
             <img src="{{ asset('storage/products/kursikantor.jpg') }}" class="rounded-sm shadow-xl w-full h-[450px] object-cover">
         </div>
         <div class="w-full md:w-1/2 space-y-6">
-            <p class="text-teal-ui font-extrabold text-xs tracking-wider">Low Price, Exclusive Product</p>
-            <h2 class="text-4xl font-extrabold text-dark-ui leading-tight">Exclusive Souvenir<br>ABBA Barokah</h2>
+            <p class="text-teal-ui font-extrabold text-xs tracking-wider">Harga Terjangkau, Produk Eksklusif</p>
+            <h2 class="text-4xl font-extrabold text-dark-ui leading-tight">Sovenir Eksklusif<br>ABBA Barokah</h2>
             <p class="text-gray-500 text-sm leading-relaxed italic">
             Kursi kantor ergonomis dengan desain modern yang dirancang khusus untuk menjaga kenyamanan posisi duduk Anda selama jam kerja. Menggunakan bahan berkualitas tinggi dan sandaran jaring (mesh) yang sejuk untuk mendukung produktivitas kerja maksimal.
             </p>
@@ -133,14 +133,14 @@
                 <div class="flex items-start gap-3">
                     <div class="bg-teal-ui p-1 rounded text-white italic text-[10px] font-bold">HQ</div>
                     <div>
-                        <p class="font-extrabold text-dark-ui text-sm">High Quality</p>
+                        <p class="font-extrabold text-dark-ui text-sm">Kualitas Tinggi</p>
                         <p class="text-[10px] text-gray-400 mt-1">Menggunakan bahan mesh premium, busa dudukan empuk anti-kempes, serta rangka kaki kokoh yang mampu menahan beban berat.</p>
                     </div>
                 </div>
                 <div class="flex items-start gap-3">
                     <div class="text-teal-ui text-xl">★</div>
                     <div>
-                        <p class="font-extrabold text-dark-ui text-sm">Favorite Product</p>
+                        <p class="font-extrabold text-dark-ui text-sm">Produk Terfavorit</p>
                         <p class="text-[10px] text-gray-400 mt-1">Telah menjadi pilihan utama dan produk paling dicari oleh berbagai perusahaan serta ruang kerja minimalis karena kenyamanannya.</p>
                     </div>
                 </div>
@@ -161,7 +161,7 @@
 
     <section class="break-container bg-gray-50 py-24 text-center">
         <div class="container mx-auto px-6">
-            <p class="text-teal-ui font-bold text-xs mb-4">Why choose ABBA Barokah?</p>
+            <p class="text-teal-ui font-bold text-xs mb-4">Mengapa Pilih ABBA Barokah?</p>
             <h2 class="text-4xl font-extrabold text-dark-ui mb-6">Solusi terbaik untuk proyek Anda!<br>menyediakan berbagai produk berkualitas<br>dengan pelayanan terpercaya</h2>
             <p class="text-gray-500 text-xs max-w-3xl mx-auto mb-12 leading-relaxed italic">
             Lebih dari sekadar penyedia produk, kami adalah rekan kerja yang siap mendengarkan kebutuhan Anda. Hubungi kami hari ini dan temukan penawaran terbaik khusus untuk proyek Anda.
@@ -188,24 +188,24 @@
     </div>
 
     <div class="flex flex-col space-y-6 md:col-start-4 md:items-end md:text-right">
-        <a href="{{ route('home') }}" class="font-extrabold text-dark-ui text-sm hover:text-teal-500 transition">Home</a>
-        <a href="{{ route('about.index') }}" class="font-extrabold text-dark-ui text-sm hover:text-teal-500 transition">About us</a>
+        <a href="{{ route('home') }}" class="font-extrabold text-dark-ui text-sm hover:text-teal-500 transition">Dashboard</a>
+        <a href="{{ route('about.index') }}" class="font-extrabold text-dark-ui text-sm hover:text-teal-500 transition">Tentang Kami</a>
         
         @guest
-            <a href="javascript:void(0)" onclick="peringatanLogin()" class="font-extrabold text-dark-ui text-sm hover:text-teal-500 transition">Product</a>
+            <a href="javascript:void(0)" onclick="peringatanLogin()" class="font-extrabold text-dark-ui text-sm hover:text-teal-500 transition">Produk</a>
         @endguest
         @auth
-            <a href="{{ route('products.index') }}" class="font-extrabold text-dark-ui text-sm hover:text-teal-500 transition">Product</a>
+            <a href="{{ route('products.index') }}" class="font-extrabold text-dark-ui text-sm hover:text-teal-500 transition">Produk</a>
         @endauth
 
         @guest
-            <a href="javascript:void(0)" onclick="peringatanLogin()" class="font-extrabold text-dark-ui text-sm hover:text-teal-500 transition">Purchase</a>
+            <a href="javascript:void(0)" onclick="peringatanLogin()" class="font-extrabold text-dark-ui text-sm hover:text-teal-500 transition">Pembelian</a>
         @endguest
         @auth
-            <a href="{{ route('purchase.history') }}" class="font-extrabold text-dark-ui text-sm hover:text-teal-500 transition">Purchase</a>
+            <a href="{{ route('purchase.history') }}" class="font-extrabold text-dark-ui text-sm hover:text-teal-500 transition">Pembelian</a>
         @endauth
         
-        <a href="{{ route('home') }}#main-footer" class="font-extrabold text-dark-ui text-sm hover:text-teal-500 transition">Contact</a>
+        <a href="{{ route('home') }}#main-footer" class="font-extrabold text-dark-ui text-sm hover:text-teal-500 transition">Kontak</a>
         </div>
         </div>
         <div class="container mx-auto px-12 mt-20 border-t border-gray-400/30 pt-8 text-center">

@@ -3,8 +3,7 @@
 @endphp
 
 <x-filament::card>
-    <h2 class="text-lg font-bold">Product Yang Baru Ditambahkan</h2>
-    <h3 class="text-sm text-gray-500 pb-4">Menampilkan 5 produk terbaru</h3>
+    <h2 class="text-lg font-bold">Produk Yang Baru Ditambahkan</h2>
 
     <div class="space-y-4">
         @forelse($products as $product)
@@ -28,7 +27,7 @@
                             >
                         @else
                             <div class="bg-gray-200 border-2 border-dashed rounded-md w-full h-full flex items-center justify-center">
-                                <span class="text-xs text-gray-500">No Image</span>
+                                <span class="text-xs text-gray-500">Tidak Ada Gambar</span>
                             </div>
                         @endif
                     </div>
@@ -63,7 +62,7 @@
             </div>
         @empty
             <div class="text-sm text-gray-500">
-                Product belum tersedia.
+                Produk belum tersedia.
             </div>
         @endforelse
 
@@ -71,7 +70,7 @@
             href="{{ ProductResource::getUrl() }}"
             class="text-sm font-medium text-primary-600 mt-4 block"
         >
-            View More Products
+            Lihat Produk Lainnya
         </a>
     </div>
 </x-filament::card>

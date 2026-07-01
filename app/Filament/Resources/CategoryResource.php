@@ -22,6 +22,7 @@ class CategoryResource extends Resource
 
     protected static ?string $navigationLabel = 'Kategori Produk';
     protected static ?string $modelLabel = 'Kategori Produk';
+    protected static ?string $pluralModelLabel = 'Kategori Produk';
 
     protected static ?string $model = Category::class;
 

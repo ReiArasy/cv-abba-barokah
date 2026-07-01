@@ -117,24 +117,24 @@
             </div>
 
             <div class="flex flex-col space-y-6 md:col-start-4 md:items-end md:text-right">
-                <a href="{{ route('home') }}" class="font-extrabold text-dark-ui text-sm hover:text-teal-500 transition">Home</a>
-                <a href="{{ route('about.index') }}" class="font-extrabold text-dark-ui text-sm hover:text-teal-500 transition">About us</a>
+                <a href="{{ route('home') }}" class="font-extrabold text-dark-ui text-sm hover:text-teal-500 transition">Dashboard</a>
+                <a href="{{ route('about.index') }}" class="font-extrabold text-dark-ui text-sm hover:text-teal-500 transition">Tentang Kami</a>
                 
                 @guest
-                    <a href="javascript:void(0)" onclick="peringatanLogin()" class="font-extrabold text-dark-ui text-sm hover:text-teal-500 transition">Product</a>
+                    <a href="javascript:void(0)" onclick="peringatanLogin()" class="font-extrabold text-dark-ui text-sm hover:text-teal-500 transition">Produk</a>
                 @endguest
                 @auth
-                    <a href="{{ route('products.index') }}" class="font-extrabold text-dark-ui text-sm hover:text-teal-500 transition">Product</a>
+                    <a href="{{ route('products.index') }}" class="font-extrabold text-dark-ui text-sm hover:text-teal-500 transition">Produk</a>
                 @endauth
 
                 @guest
-                    <a href="javascript:void(0)" onclick="peringatanLogin()" class="font-extrabold text-dark-ui text-sm hover:text-teal-500 transition">Purchase</a>
+                    <a href="javascript:void(0)" onclick="peringatanLogin()" class="font-extrabold text-dark-ui text-sm hover:text-teal-500 transition">Pembelian</a>
                 @endguest
                 @auth
-                    <a href="{{ route('purchase.history') }}" class="font-extrabold text-dark-ui text-sm hover:text-teal-500 transition">Purchase</a>
+                    <a href="{{ route('purchase.history') }}" class="font-extrabold text-dark-ui text-sm hover:text-teal-500 transition">Pembelian</a>
                 @endauth
                 
-                <a href="{{ route('home') }}#main-footer" class="font-extrabold text-dark-ui text-sm hover:text-teal-500 transition">Contact</a>
+                <a href="{{ route('home') }}#main-footer" class="font-extrabold text-dark-ui text-sm hover:text-teal-500 transition">Kontak</a>
             </div>
         </div>
         

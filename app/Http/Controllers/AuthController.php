@@ -78,7 +78,7 @@ class AuthController extends Controller
             'role' => 'customer', 
         ]);
 
-        return redirect()->route('login')->with('success', 'Registrasi berhasil! Silakan login.');
+        return redirect()->route('login')->with('success', 'Registrasi berhasil! Silahkan login!');
     }
 
     public function logout(Request $request)
@@ -120,7 +120,7 @@ class AuthController extends Controller
         // REVISI LOGIKA: Cek apakah password baru sama dengan password yang saat ini aktif
         if (Hash::check($request->password, $user->password)) {
             return back()->withErrors([
-                'password' => 'Password baru tidak boleh sama dengan password lama Anda.'
+                'password' => 'Password baru tidak boleh sama dengan password lama Anda!'
             ])->withInput();
         }
 
@@ -129,6 +129,6 @@ class AuthController extends Controller
             'password' => bcrypt($request->password)
         ]);
 
-        return redirect()->route('login')->with('success', 'Password berhasil diperbarui! Silakan gunakan password baru Anda.');
+        return redirect()->route('login')->with('success', 'Password berhasil diperbarui! Silahkan gunakan password baru Anda!');
     }
 }

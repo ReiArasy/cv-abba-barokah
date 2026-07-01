@@ -4,7 +4,6 @@
 
 <x-filament::card>
     <h2 class="text-lg font-bold">Riwayat Transaksi</h2>
-    <h3 class="text-sm text-gray-500 mb-4">Menampilkan 5 transaksi terbaru</h3>
 
     <div class="space-y-3">
         @forelse($orders as $order)
@@ -27,7 +26,7 @@
             href="{{ OrderResource::getUrl() }}"
             class="text-sm font-medium text-primary-600 hover:text-primary-500 hover:underline transition duration-150 ease-in-out mt-4 block"
         >
-            View More Transaction
+            Lihat Transaksi Lainnya
         </a>
     </div>
 </x-filament::card>

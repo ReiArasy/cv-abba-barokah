@@ -27,8 +27,12 @@ class ProductResource extends Resource
     protected static ?string $model = Product::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?string $navigationLabel = 'Manage Produk';
+    protected static ?string $navigationLabel = 'Mengelola Produk';
     protected static ?string $title = 'Produk';
+    
+    // Menambahkan model label tunggal & jamak agar "Products" berubah menjadi "Produk"
+    protected static ?string $modelLabel = 'Produk';
+    protected static ?string $pluralModelLabel = 'Produk';
 
     public static function form(Form $form): Form
     {
@@ -39,6 +43,7 @@ class ProductResource extends Resource
                     ->label('Kategori')
                     ->relationship('category', 'name')
                     ->searchable()
+                    ->placeholder('Pilih Kategori...')
                     ->rules(['required']),
 
                 TextInput::make('name')
@@ -166,10 +171,16 @@ class ProductResource extends Resource
             ])
 
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->label('Ubah'), // Mengubah teks tombol aksi 'Edit' menjadi 'Ubah'
             ])
 
-            ->bulkActions([]);
+            ->bulkActions([])
+            
+            // Mengubah teks "No products" dan placeholder "Search"
+            ->emptyStateHeading('Tidak Ada Produk')
+            ->emptyStateDescription('Belum ada data produk yang ditambahkan.')
+            ->searchPlaceholder('Cari Produk...');
     }
 
     public static function getRelations(): array
