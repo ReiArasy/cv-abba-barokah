@@ -16,10 +16,10 @@ use Filament\Tables\Actions\Action;
 
 class OrderResource extends Resource
 {
-    protected static ?string $navigationLabel = 'Manage Pesanan';
+    protected static ?string $navigationLabel = 'Mengelola Pesanan';
     protected static ?string $modelLabel = 'Pesanan';
     // Menambahkan plural label agar teks "Pesanans" di title dan breadcrumb berubah menjadi "Pesanan"
-    protected static ?string $pluralModelLabel = 'Pesanan'; 
+    protected static ?string $pluralModelLabel = 'Pesanan';
     protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
 
     public static function form(Form $form): Form
@@ -31,15 +31,15 @@ class OrderResource extends Resource
                         Forms\Components\TextInput::make('id')
                             ->disabled(),
 
-                        Forms\Components\Select::make('status')
-                            ->options([
-                                'pending' => 'Tertunda',     // Mengubah 'Pending' -> 'Tertunda'
-                                'paid' => 'Dibayar',         // Mengubah 'Paid' -> 'Dibayar'
-                                'processing' => 'Diproses',  // Mengubah 'Processing' -> 'Diproses'
-                                'shipped' => 'Dikirim',      // Mengubah 'Shipped' -> 'Dikirim'
-                                'cancelled' => 'Dibatalkan', // Mengubah 'Cancelled' -> 'Dibatalkan'
-                            ])
-                            ->required(),
+                        // Forms\Components\Select::make('status')
+                        //     ->options([
+                        //         'pending' => 'Tertunda',     // Mengubah 'Pending' -> 'Tertunda'
+                        //         'paid' => 'Dibayar',         // Mengubah 'Paid' -> 'Dibayar'
+                        //         'processing' => 'Diproses',  // Mengubah 'Processing' -> 'Diproses'
+                        //         'shipped' => 'Dikirim',      // Mengubah 'Shipped' -> 'Dikirim'
+                        //         'cancelled' => 'Dibatalkan', // Mengubah 'Cancelled' -> 'Dibatalkan'
+                        //     ])
+                        //     ->required(),
                     ]),
             ]);
     }
@@ -69,16 +69,6 @@ class OrderResource extends Resource
                     'paid' => 'success',
                     'unpaid' => 'warning',
                     'failed' => 'danger',
-                }),
-
-            Tables\Columns\TextColumn::make('status')
-                ->label('Status Pesanan') // Menambahkan label Bahasa Indonesia
-                ->badge()
-                ->color(fn(string $state): string => match ($state) {
-                    'pending' => 'warning',
-                    'processing' => 'primary',
-                    'shipped' => 'success',
-                    'cancelled' => 'danger',
                 }),
 
             Tables\Columns\TextColumn::make('created_at')

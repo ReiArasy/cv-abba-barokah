@@ -20,11 +20,11 @@
                         @php
                                 $imageSrc = is_array($product->image) ? head($product->image) : $product->image;
                         @endphp
-                            <img 
-                                src="{{ asset('storage/' . $product->imageSrc) }}" 
-                                alt="{{ $product->name }}" 
-                                class="w-full h-full object-cover"
-                            >
+                            <img
+    src="{{ asset('storage/' . $imageSrc) }}"
+    alt="{{ $product->name }}"
+    class="w-full h-full object-cover"
+>
                         @else
                             <div class="bg-gray-200 border-2 border-dashed rounded-md w-full h-full flex items-center justify-center">
                                 <span class="text-xs text-gray-500">Tidak Ada Gambar</span>

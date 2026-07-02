@@ -28,11 +28,9 @@ class ProductResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationLabel = 'Mengelola Produk';
-    protected static ?string $title = 'Produk';
-    
-    // Menambahkan model label tunggal & jamak agar "Products" berubah menjadi "Produk"
     protected static ?string $modelLabel = 'Produk';
     protected static ?string $pluralModelLabel = 'Produk';
+    protected static ?string $title = 'Produk';
 
     public static function form(Form $form): Form
     {
