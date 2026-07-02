@@ -27,26 +27,47 @@
     .text-dark-ui { color: #1e293b; }
 </style>
 
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
 <div class="ui-font bg-white overflow-x-hidden">
 
-    <!-- Konten Utama (Body About Us Asli Tanpa Modifikasi CSS Aneh) -->
     <div class="bg-gray-50 min-h-screen pt-12 pb-20">
         <div class="container mx-auto px-6 md:px-12 max-w-5xl">
             
-            <!-- Header Section -->
             <div class="text-center mb-16">
                 <p class="text-teal-ui font-extrabold text-xs tracking-wider uppercase mb-3">Tentang Kami</p>
                 <h1 class="text-4xl font-extrabold text-dark-ui mb-4">CV ABBA BAROKAH</h1>
                 <div class="h-1.5 w-16 bg-teal-ui mx-auto rounded-full"></div>
             </div>
 
-            <!-- Grid Content (Tentang Perusahaan) -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-16">
-                <div>
-                    <img src="https://images.unsplash.com/photo-1606857521015-7f9fcf423740?q=80&w=800" 
-                         alt="Office" 
-                         class="rounded-lg shadow-md w-full h-[350px] object-cover border border-gray-200">
+                <div x-data="{ 
+                        active: 1, 
+                        total: 6,
+                        init() {
+                            setInterval(() => {
+                                this.active = this.active === this.total ? 1 : this.active + 1;
+                            }, 5000);
+                        }
+                     }" 
+                     class="relative w-full h-[350px] overflow-hidden rounded-lg shadow-md border border-gray-200 bg-gray-100">
+                    
+                    <template x-for="i in total" :key="i">
+                        <div x-show="active === i"
+                             x-transition:enter="transition ease-out duration-300 transform"
+                             x-transition:enter-start="translate-x-full"
+                             x-transition:enter-end="translate-x-0"
+                             x-transition:leave="transition ease-in duration-300 transform"
+                             x-transition:leave-start="translate-x-0"
+                             x-transition:leave-end="-translate-x-full"
+                             class="absolute inset-0 w-full h-full">
+                            <img :src="`{{ asset('storage/products') }}/proses${i}.jpg`" 
+                                 :alt="`Proses ${i}`" 
+                                 class="w-full h-full object-cover">
+                        </div>
+                    </template>
                 </div>
+
                 <div class="space-y-6">
                     <h2 class="text-2xl font-bold text-dark-ui">Membangun Kualitas dan Menyediakan Kepercayaan</h2>
                     <p class="text-gray-600 text-sm leading-relaxed">
@@ -58,7 +79,6 @@
                 </div>
             </div>
 
-            <!-- Visi & Misi Section -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
                 <div class="bg-white p-8 rounded-lg border border-gray-100 shadow-sm">
                     <div class="text-teal-ui text-2xl mb-3">👁️‍🗨️</div>
@@ -78,7 +98,6 @@
                 </div>
             </div>
 
-            <!-- Bagian Alamat & Kontak CTA Section (Sudah Diperbaiki Jaraknya) -->
             <div class="w-full relative z-10">
                 <div class="bg-teal-ui text-white rounded-lg p-8 shadow-md flex flex-col md:flex-row justify-between items-center gap-6">
                     <div>
@@ -94,11 +113,7 @@
         </div>
     </div>
 
-    <!-- FOOTER (Gaya Dashboard) -->
-    <!-- Menggunakan pt-16 karena jarak sekarang dikontrol dengan aman oleh pembungkus konten di dalamnya -->
     <footer id="main-footer" class="break-container bg-[#d1d5db] pt-16 pb-10">
-
-        <!-- Konten Link dan Alamat Footer -->
         <div class="container mx-auto px-12 grid grid-cols-1 md:grid-cols-4 gap-12">
             <div class="md:col-span-2 text-left">
                 <div class="bg-white/60 p-4 w-20 h-16 rounded mb-8 flex items-center justify-center border border-gray-300">
@@ -144,4 +159,4 @@
     </footer>
 
 </div>
-@endsection
+@endsection  

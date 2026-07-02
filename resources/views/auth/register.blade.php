@@ -32,13 +32,36 @@
 <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">
     <div class="max-w-5xl w-full bg-white shadow-lg rounded-xl overflow-hidden flex flex-col md:flex-row">
         
-        <!-- Sisi Kiri: Placeholder Gambar -->
-        <div class="hidden md:flex md:w-1/3 bg-gray-100 items-center justify-center p-8">
-            <div class="w-full aspect-square border-2 border-dashed border-gray-300 flex items-center justify-center rounded-lg">
-                <svg class="w-20 h-20 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
-                </svg>
+        <div
+            x-data="{
+                current: 0,
+                total: 7,
+                start() {
+                    setInterval(() => {
+                        this.current = (this.current + 1) % this.total;
+                    }, 3000);
+                }
+            }"
+            x-init="start()"
+            class="hidden md:block md:w-1/2 relative overflow-hidden">
+
+            <div
+                class="flex transition-transform duration-700 ease-in-out"
+                :style="'transform: translateX(-' + (current * 100) + '%)'">
+
+                <img src="{{ asset('storage/products/proses1.jpg') }}" class="w-full flex-none h-[600px] object-cover">
+                <img src="{{ asset('storage/products/proses2.jpg') }}" class="w-full flex-none h-[600px] object-cover">
+                <img src="{{ asset('storage/products/proses3.jpg') }}" class="w-full flex-none h-[600px] object-cover">
+                <img src="{{ asset('storage/products/proses4.jpg') }}" class="w-full flex-none h-[600px] object-cover">
+                <img src="{{ asset('storage/products/proses5.jpg') }}" class="w-full flex-none h-[600px] object-cover">
+                <img src="{{ asset('storage/products/proses6.jpg') }}" class="w-full flex-none h-[600px] object-cover">
+                <img src="{{ asset('storage/products/proses7.jpg') }}" class="w-full flex-none h-[600px] object-cover">
+
             </div>
+
+            <!-- Overlay -->
+            <div class="absolute inset-0 bg-black/40"></div>
+
         </div>
 
         <!-- Sisi Kanan: Form Registrasi -->

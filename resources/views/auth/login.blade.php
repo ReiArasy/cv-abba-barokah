@@ -2,47 +2,129 @@
 
 @section('content')
 <div class="min-h-screen flex items-center justify-center bg-gray-50">
-    <div class="max-w-4xl w-full bg-white shadow-lg rounded-lg overflow-hidden flex flex-col md:flex-row">
-        
-        <div class="hidden md:flex md:w-1/2 bg-gray-100 items-center justify-center p-12">
-            <div class="w-48 h-48 border-2 border-dashed border-gray-300 flex items-center justify-center rounded-lg">
-                <svg class="w-24 h-24 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
+
+    <div class="max-w-5xl w-full bg-white rounded-xl shadow-xl overflow-hidden flex flex-col md:flex-row">
+        <div
+            x-data="{
+                current: 0,
+                total: 7,
+                start() {
+                    setInterval(() => {
+                        this.current = (this.current + 1) % this.total;
+                    }, 3000);
+                }
+            }"
+            x-init="start()"
+            class="hidden md:block md:w-1/2 relative overflow-hidden">
+
+            <div
+                class="flex transition-transform duration-700 ease-in-out"
+                :style="'transform: translateX(-' + (current * 100) + '%)'">
+
+                <img src="{{ asset('storage/products/proses1.jpg') }}" class="w-full flex-none h-[600px] object-cover">
+                <img src="{{ asset('storage/products/proses2.jpg') }}" class="w-full flex-none h-[600px] object-cover">
+                <img src="{{ asset('storage/products/proses3.jpg') }}" class="w-full flex-none h-[600px] object-cover">
+                <img src="{{ asset('storage/products/proses4.jpg') }}" class="w-full flex-none h-[600px] object-cover">
+                <img src="{{ asset('storage/products/proses5.jpg') }}" class="w-full flex-none h-[600px] object-cover">
+                <img src="{{ asset('storage/products/proses6.jpg') }}" class="w-full flex-none h-[600px] object-cover">
+                <img src="{{ asset('storage/products/proses7.jpg') }}" class="w-full flex-none h-[600px] object-cover">
+
             </div>
+
+            <!-- Overlay -->
+            <div class="absolute inset-0 bg-black/40"></div>
+
         </div>
 
-        <div class="w-full md:w-1/2 p-8">
-            <div class="mb-8">
-                <h2 class="text-3xl font-bold text-gray-800">Login Masuk</h2>
-                <p class="text-gray-500">Silahkan Login!</p>
+        <div class="w-full md:w-1/2 flex items-center">
+
+            <div class="w-full px-10 py-12">
+
+                <!-- Judul -->
+                <div class="mb-10">
+                    <h2 class="text-4xl font-bold text-gray-800">
+                        Login Masuk
+                    </h2>
+
+                    <p class="mt-2 text-gray-500">
+                        Silahkan Login!
+                    </p>
+                </div>
+
+                <!-- Form -->
+                <form
+                    action="{{ route('login.post') }}"
+                    method="POST"
+                    class="space-y-6">
+
+                    @csrf
+
+                    <!-- Email -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Email
+                        </label>
+
+                        <input
+                            type="email"
+                            name="email"
+                            placeholder="Silahkan Masukkan Email!"
+                            class="w-full h-12 px-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                            required>
+                    </div>
+
+                    <!-- Password -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Password
+                        </label>
+
+                        <input
+                            type="password"
+                            name="password"
+                            placeholder="Silahkan Masukkan Password!"
+                            class="w-full h-12 px-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                            required>
+                    </div>
+
+                    <!-- Tombol -->
+                    <div class="pt-3">
+                        <button
+                            type="submit"
+                            class="w-full h-12 bg-[#14b8a6] hover:bg-[#0d9488] text-white font-semibold rounded-lg transition duration-300">
+                            Masuk
+                        </button>
+                    </div>
+
+                </form>
+
+                <!-- Footer -->
+                <div class="mt-8 text-center text-sm text-gray-600">
+
+                    <span>Tidak Punya Akun?</span>
+
+                    <a
+                        href="{{ route('register') }}"
+                        class="ml-1 font-semibold text-blue-600 hover:underline">
+                        Registrasi
+                    </a>
+
+                    <span class="mx-3 text-gray-300">|</span>
+
+                    <a
+                        href="{{ route('password.request') }}"
+                        class="font-semibold text-teal-600 hover:underline">
+                        Lupa Password?
+                    </a>
+
+                </div>
+
             </div>
 
-            <form action="{{ route('login.post') }}" method="POST">
-                @csrf
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2">Email</label>
-                    <input type="email" name="email" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder="Silahkan Masukkan Email!" required>
-                </div>
-
-                <div class="mb-6">
-                    <label class="block text-gray-700 text-sm font-bold mb-2">Password</label>
-                    <input type="password" name="password" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder="Silahkan Masukkan Password!" required>
-                </div>
-
-                <button type="submit" class="w-full bg-[#14b8a6] hover:bg-[#0d9488] text-white font-bold py-2 px-4 rounded transition duration-200">
-                    Masuk
-                </button>
-            </form>
-
-            <p class="mt-6 text-center text-sm text-gray-600 space-x-2">
-                <span>Tidak Punya Akun?</span>
-                <a href="{{ route('register') }}" class="text-blue-500 font-bold hover:underline">Registrasi</a>
-                <span class="text-gray-300">|</span>
-                <a href="{{ route('password.request') }}" class="text-teal-600 font-bold hover:underline">Lupa Password?</a>
-            </p>
         </div>
+
     </div>
+
 </div>
 
 <script>

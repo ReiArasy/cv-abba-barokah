@@ -27,12 +27,16 @@
     .text-dark-ui { color: #1e293b; }
 </style>
 
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
 <div class="ui-font bg-white overflow-x-hidden">
 
-    @include('components.navbar')
-
-    <header class="break-container relative h-[500px] bg-cover bg-center" 
-            style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=1200');">
+<header
+    class="break-container relative h-[1000px] md:h-[600px] bg-cover bg-center bg-no-repeat"
+    style="
+        background-image:
+        linear-gradient(rgba(0,0,0,.5), rgba(0,0,0,.5)),
+        url('{{ asset('storage/products/gudang.png') }}');">
         
         <div class="flex flex-col items-center justify-center h-full -mt-20 px-4 text-center text-white relative z-10">
             <p class="uppercase tracking-[0.3em] text-[10px] font-extrabold mb-4 opacity-90">CV ABBA BAROKAH</p>
