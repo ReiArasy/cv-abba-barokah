@@ -62,10 +62,12 @@ class CategoryResource extends Resource
                     ->dateTime()
                     ->sortable(),
 
-                IconColumn::make('is_active')
-                    ->boolean()
+                TextColumn::make('is_active')
                     ->label('Status')
-                    ->sortable(),
+                    ->badge()
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Aktif' : 'Nonaktif')
+                    ->color(fn (bool $state): string => $state ? 'success' : 'danger'),
+                    
             ])
             ->filters([
                 //

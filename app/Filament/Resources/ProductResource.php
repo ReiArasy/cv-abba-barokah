@@ -147,13 +147,11 @@ class ProductResource extends Resource
                     ->label('Tanggal Dibuat')
                     ->dateTime('d M Y H:i'),
 
-                IconColumn::make('is_active')
+                TextColumn::make('is_active')
                     ->label('Status')
-                    ->boolean()
-                    ->trueIcon('heroicon-o-check-circle')
-                    ->falseIcon('heroicon-o-x-circle')
-                    ->trueColor('success')
-                    ->falseColor('danger'),
+                    ->badge()
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Aktif' : 'Nonaktif')
+                    ->color(fn (bool $state): string => $state ? 'success' : 'danger'),
             ])
 
             ->filters([
