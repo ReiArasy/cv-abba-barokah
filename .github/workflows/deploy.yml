@@ -19,7 +19,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /var/www/cv-abba-barokah.production
+            cd /www/wwwroot/cv-abba-barokah.production
             git pull origin dev
             composer install --no-dev --optimize-autoloader
             php artisan migrate --force
