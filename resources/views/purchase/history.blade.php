@@ -42,12 +42,6 @@
                data-status="{{ $filterCategory }}">
                
                 <div class="flex flex-col md:flex-row md:items-start gap-6 relative">
-                    
-                    <div class="w-32 h-32 bg-[#e2e6eb] flex items-center justify-center flex-shrink-0">
-                        <svg class="w-10 h-10 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
 
                     <div class="flex-1 flex flex-col justify-between h-32 w-full">
                         

@@ -4,12 +4,12 @@
 <div class="max-w-5xl mx-auto px-4 py-8 font-sans">
     
     <div class="flex items-center justify-center relative mb-12">
-        <a href="{{ route('orders.index') }}" class="absolute left-0 text-slate-600 hover:text-slate-900 transition">
+        <a href="{{ route('purchase.history') }}" class="absolute left-0 text-slate-600 hover:text-slate-900 transition">
             <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
             </svg>
         </a>
-        <h1 class="text-2xl font-bold text-slate-800">Detail Purchase</h1>
+        <h1 class="text-2xl font-bold text-slate-800">Detail Riwayat Pembelian</h1>
     </div>
 
     <div class="mb-8">
@@ -26,7 +26,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
         
         <div>
-            <h2 class="text-xl font-bold text-slate-800 mb-4">Order Detail's</h2>
+            <h2 class="text-xl font-bold text-slate-800 mb-4">Detial Pembelian</h2>
             <div class="border border-gray-300 rounded p-6 bg-white">
                 
                 <div class="flex justify-between items-center mb-6 pb-6 border-b border-gray-200">
@@ -43,11 +43,6 @@
                 <div class="space-y-6">
                     @foreach($order->items as $item)
                     <div class="flex gap-6">
-                        <div class="w-20 h-20 bg-[#e2e6eb] rounded flex-shrink-0 flex items-center justify-center">
-                            <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
-                            </svg>
-                        </div>
                         
                         <div class="flex-1 text-sm grid grid-cols-[100px_1fr] gap-y-2">
                             <span class="text-slate-500">Nama Produk</span>
@@ -72,7 +67,7 @@
         </div>
 
         <div>
-            <h2 class="text-xl font-bold text-slate-800 mb-4">Customer Information</h2>
+            <h2 class="text-xl font-bold text-slate-800 mb-4">Informasi Pembeli</h2>
             
             <div class="border border-gray-300 rounded p-6 bg-white mb-6">
                 <div class="mb-6">
@@ -82,7 +77,7 @@
 
                 <div class="mb-6">
                     <h3 class="text-slate-800 font-bold mb-1 text-lg">Alamat</h3>
-                    <p class="text-[#1aa385] max-w-[250px] leading-relaxed">{{ auth()->user()->address ?? 'Jalan Batang no 100, Batang, Jawa Tengah' }}</p>
+                    <p class="text-[#1aa385] max-w-[250px] leading-relaxed">{{ auth()->user()->alamat_lengkap ?? 'Jalan Batang no 100, Batang, Jawa Tengah' }}</p>
                 </div>
 
                 <div>
