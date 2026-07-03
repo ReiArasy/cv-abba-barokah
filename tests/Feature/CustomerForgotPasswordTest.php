@@ -26,6 +26,7 @@ class CustomerForgotPasswordTest extends TestCase
     | Skenario pengujian untuk pembaruan kata sandi customer berdasarkan
     | parameter validasi dan aturan logika pada AuthController.
     |
+    |--------------------------------------------------------------------------
     */
 
     /** TC-008-A: Customer Mengubah Password dengan Email Valid */
@@ -132,5 +133,65 @@ class CustomerForgotPasswordTest extends TestCase
         // Memastikan password di database tetap bernilai aman (tidak berubah)
         $user = User::where('email', 'hakimalbaihaqy100@gmail.com')->first();
         $this->assertTrue(Hash::check('Madrid-Bayern_1-2', $user->password));
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | TAMBAHAN SKENARIO BERDASARKAN DOKUMEN EXCEL
+    |--------------------------------------------------------------------------
+    */
+
+    /** TC-010-D: Customer Mengubah Password dengan Kata Sandi Kurang dari 8 Karakter */
+    public function test_tc008e_customer_mengubah_password_dengan_kata_sandi_kurang_dari_8_karakter()
+    {
+        // Membuat customer master di database
+        User::create([
+            'name' => 'Abdul Hakim',
+            'username' => 'Isopad23',
+            'email' => 'hakimalbaihaqy100@gmail.com',
+            'phone' => '085785964677',
+            'password' => bcrypt('Hakim180904'),
+            'alamat_lengkap' => 'Surabaya',
+            'provinsi' => 'Jawa Timur',
+            'kota' => 'Surabaya',
+            'role' => 'customer'
+        ]);
+
+        // Mengirimkan password yang tidak memenuhi syarat panjang minimal 8 karakter (hanya 5 karakter)
+        $response = $this->post('/forgot-password', [
+            'email' => 'hakimalbaihaqy100@gmail.com',
+            'password' => 'Abdul',
+            'password_confirmation' => 'Abdul'
+        ]);
+
+        // Memastikan sistem memicu error validasi pada field password akibat batasan minimal karakter
+        $response->assertSessionHasErrors('password');
+    }
+
+    /** TC-10-E: Customer Mengubah Password dengan Mengosongkan Kolom Konfirmasi Kata Sandi */
+    public function test_tc008f_customer_mengubah_password_dengan_konfirmasi_kata_sandi_kosong()
+    {
+        // Membuat customer master di database
+        User::create([
+            'name' => 'Abdul Hakim',
+            'username' => 'Isopad23',
+            'email' => 'hakimalbaihaqy100@gmail.com',
+            'phone' => '085785964677',
+            'password' => bcrypt('Hakim180904'),
+            'alamat_lengkap' => 'Surabaya',
+            'provinsi' => 'Jawa Timur',
+            'kota' => 'Surabaya',
+            'role' => 'customer'
+        ]);
+
+        // Mengirimkan request dengan membiarkan string konfirmasi kosong (tidak diisi)
+        $response = $this->post('/forgot-password', [
+            'email' => 'hakimalbaihaqy100@gmail.com',
+            'password' => 'Abdul180904',
+            'password_confirmation' => '' // Field dikosongkan sesuai kasus uji TC-10-E
+        ]);
+
+        // Memastikan sistem menolak dan mengembalikan error validasi field required / confirmation
+        $response->assertSessionHasErrors('password');
     }
 }

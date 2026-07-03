@@ -100,4 +100,36 @@ class CustomerLoginTest extends TestCase
         // Memastikan validator Laravel menangkap error 'required' dari email dan password
         $response->assertSessionHasErrors(['email', 'password']);
     }
+
+    /** TC-006C: Customer Login Isi Field Email, Tetapi Field Password Kosong */
+    public function test_tc006c_customer_login_password_kosong()
+    {
+        // Mengirimkan data dengan email terisi namun password kosong
+        $response = $this->post('/login', [
+            'email' => 'hakimalbaihaqy100@gmail.com',
+            'password' => ''
+        ]);
+
+        // Memastikan customer tidak masuk ke dalam sistem
+        $this->assertGuest();
+
+        // Memastikan validator Laravel melempar error karena field password kosong
+        $response->assertSessionHasErrors('password');
+    }
+
+    /** TC-006D: Customer Login Mengisi Field Email Tanpa Menyertakan Tanda '@' */
+    public function test_tc006d_customer_login_email_tanpa_at()
+    {
+        // Mengirimkan request login dengan format email tidak valid (tanpa '@')
+        $response = $this->post('/login', [
+            'email' => 'hakimalbaihaqy100gmail.com', // Format tidak valid
+            'password' => 'Hakim180904'
+        ]);
+
+        // Memastikan customer tetap sebagai guest
+        $this->assertGuest();
+
+        // Memastikan validator Laravel menangkap kegagalan aturan format 'email'
+        $response->assertSessionHasErrors('email');
+    }
 }

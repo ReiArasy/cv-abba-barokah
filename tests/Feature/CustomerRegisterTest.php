@@ -103,4 +103,23 @@ class CustomerRegisterTest extends TestCase
             'kota'
         ]);
     }
+
+    /** BARU - TC-007C: Customer Mengisi Data Registrasi dan input password kurang dari 8 karakter */
+    public function test_tc007c_register_password_kurang_dari_8_karakter()
+    {
+        // Mengirimkan request POST dengan data valid, namun password hanya 7 karakter ('Hakim12')
+        $response = $this->post('/register', [
+            'username' => 'Revenge',
+            'name' => 'Abdul Hakim',
+            'password' => 'Hakim12', // Hanya 7 karakter (Memicu aturan 'min:8' di Laravel)
+            'alamat_lengkap' => 'Jl. sana sini No. 16, kota Surabaya',
+            'email' => 'hakimalbaihaqy@gmail.com',
+            'provinsi' => 'Jawa Timur',
+            'phone' => '085785964677',
+            'kota' => 'Surabaya',
+        ]);
+
+        // Memastikan session mendeteksi error validasi khusus pada field 'password'
+        $response->assertSessionHasErrors('password');
+    }
 }
